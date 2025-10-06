@@ -1,3 +1,4 @@
+# app/main.py
 import os
 import re
 import secrets
@@ -5,15 +6,12 @@ import string
 from datetime import datetime
 from typing import Optional
 
+# fastapi imports
 from fastapi import FastAPI, HTTPException, Request, status, Form
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from pydantic import HttpUrl
 from contextlib import asynccontextmanager
 from app.redis_client import init_redis_pool, redis_client,close_redis
-import tracemalloc
-
-tracemalloc.start()
                 
 # ----------------------------
 # Template setup
@@ -21,21 +19,20 @@ tracemalloc.start()
 templates = Jinja2Templates(directory="templates")
 
 # ----------------------------
-# Base62 utils for short codes
+# Lifespan for Redis connection
 # ----------------------------
-ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-BASE = len(ALPHABET)
-
-def base62_encode(num: int) -> str:
-    if num == 0:
-        return ALPHABET[0]
-    chars = []
-    while num:
-        num, rem = divmod(num, BASE)
-        chars.append(ALPHABET[rem])
-    return "".join(reversed(chars))
-
-
+@asynccontextmanager
+async def lifespan_redis(app: FastAPI):
+    # Startup: Initialize Redis
+    client = await init_redis_pool()
+    globals()["redis_client"] = client
+    try:
+        yield
+    except Exception as error:
+        print("Error during app lifespan:", error)
+    await close_redis()
+    
+    
 # ----------------------------
 # Alias validation
 # ----------------------------
@@ -45,22 +42,9 @@ def valid_alias(alias: str) -> bool:
     return bool(ALIAS_RE.fullmatch(alias))
 
             
-app = FastAPI(title="URL Shortener (FastAPI + Redis)",debug=True)
+app = FastAPI(title="URL Shortener (FastAPI + Redis)",lifespan=lifespan_redis)
 
 
-# ----------------------------
-# Redis client (initialized in lifespan)
-# ----------------------------
-@app.on_event("startup")
-async def on_startup():
-    client = await init_redis_pool()
-    globals()["redis_client"] = client
-
-
-@app.on_event("shutdown")
-async def on_shutdown():
-    await close_redis()
-    
 # ----------------------------
 # Helper: Client ID for rate limiting
 # ----------------------------
@@ -156,8 +140,8 @@ async def shorten_url(
     )
     await redis_client.set(f"clicks:{short_code}", 0)
 
-    # Optional: expiry (7 days)
-    EXPIRY_SECONDS = 7 * 24 * 60 * 60
+    # Optional: expiry (7 days * 24 hrs * 60 mins * 60 secs)
+    EXPIRY_SECONDS = 60
     await redis_client.expire(f"url:{short_code}", EXPIRY_SECONDS)
     await redis_client.expire(f"meta:{short_code}", EXPIRY_SECONDS)
     await redis_client.expire(f"clicks:{short_code}", EXPIRY_SECONDS)
