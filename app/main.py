@@ -1,0 +1,197 @@
+import os
+import re
+import secrets
+import string
+from datetime import datetime
+from typing import Optional
+
+from fastapi import FastAPI, HTTPException, Request, status, Form
+from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from pydantic import HttpUrl
+from contextlib import asynccontextmanager
+from app.redis_client import init_redis_pool, redis_client,close_redis
+import tracemalloc
+
+tracemalloc.start()
+                
+# ----------------------------
+# Template setup
+# ----------------------------
+templates = Jinja2Templates(directory="templates")
+
+# ----------------------------
+# Base62 utils for short codes
+# ----------------------------
+ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+BASE = len(ALPHABET)
+
+def base62_encode(num: int) -> str:
+    if num == 0:
+        return ALPHABET[0]
+    chars = []
+    while num:
+        num, rem = divmod(num, BASE)
+        chars.append(ALPHABET[rem])
+    return "".join(reversed(chars))
+
+
+# ----------------------------
+# Alias validation
+# ----------------------------
+ALIAS_RE = re.compile(r"^[A-Za-z0-9_-]{3,100}$")
+
+def valid_alias(alias: str) -> bool:
+    return bool(ALIAS_RE.fullmatch(alias))
+
+            
+app = FastAPI(title="URL Shortener (FastAPI + Redis)",debug=True)
+
+
+# ----------------------------
+# Redis client (initialized in lifespan)
+# ----------------------------
+@app.on_event("startup")
+async def on_startup():
+    client = await init_redis_pool()
+    globals()["redis_client"] = client
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    await close_redis()
+    
+# ----------------------------
+# Helper: Client ID for rate limiting
+# ----------------------------
+def get_client_id(request: Request) -> str:
+    xff = request.headers.get("x-forwarded-for")
+    if xff:
+        return xff.split(",")[0].strip()
+    if request.client:
+        return request.client.host
+    return "anonymous"
+
+
+# ----------------------------
+# Simple rate limiter (10 req/min)
+# ----------------------------
+async def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
+    from app.redis_client import redis_client  # ensure you're using the same instance
+    if not redis_client:
+        raise HTTPException(status_code=500, detail="Redis not initialized")
+    print("Redis client:", redis_client)
+    key = f"rate:{client_id}"
+    count = await redis_client.incr(key)
+    if count == 1:
+        await redis_client.expire(key, period_seconds)
+    if count > limit:
+        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+
+# ----------------------------
+# Homepage (form)
+# ----------------------------
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    """Render the HTML form to input a long URL."""
+    return templates.TemplateResponse("index.html", {"request": request, "short_url": None, "error": None})
+
+# ----------------------------
+# POST /shorten (Form submission)
+# ----------------------------
+@app.post("/shorten", response_class=HTMLResponse)
+async def shorten_url(
+    request: Request,
+    original_url: str = Form(...),
+    custom_alias: Optional[str] = Form(None)
+):
+    client_id = get_client_id(request)
+    await check_rate_limit(client_id, limit=10, period_seconds=60)
+
+    # Validate and normalize URL
+    if not original_url.startswith(("http://", "https://")):
+        original_url = "http://" + original_url
+    long_url = original_url.strip()
+    created_at = datetime.utcnow().isoformat()
+
+    # Handle custom alias
+    if custom_alias:
+        custom_alias = custom_alias.strip()
+        if not valid_alias(custom_alias):
+            return templates.TemplateResponse(
+                "index.html",
+                {
+                    "request": request,
+                    "short_url": None,
+                    "error": "Invalid alias. Use A-Z, a-z, 0-9, _ or -"
+                }
+            )
+
+        ok = await redis_client.set(f"url:{custom_alias}", long_url, nx=True)
+        if not ok:
+            return templates.TemplateResponse(
+                "index.html",
+                {
+                    "request": request,
+                    "short_url": None,
+                    "error": "Alias already in use."
+                }
+            )
+        short_code = custom_alias
+    else:
+        # Generate random 6-character alphanumeric code
+        alphabet = string.ascii_letters + string.digits
+        while True:
+            short_code = ''.join(secrets.choice(alphabet) for _ in range(6))
+            if not await redis_client.exists(f"url:{short_code}"):
+                break
+
+        # Store mapping
+        await redis_client.set(f"url:{short_code}", long_url)
+
+    # Store metadata + click counter
+    await redis_client.hset(
+        f"meta:{short_code}",
+        mapping={"created_at": created_at, "owner": client_id}
+    )
+    await redis_client.set(f"clicks:{short_code}", 0)
+
+    # Optional: expiry (7 days)
+    EXPIRY_SECONDS = 7 * 24 * 60 * 60
+    await redis_client.expire(f"url:{short_code}", EXPIRY_SECONDS)
+    await redis_client.expire(f"meta:{short_code}", EXPIRY_SECONDS)
+    await redis_client.expire(f"clicks:{short_code}", EXPIRY_SECONDS)
+
+    short_url = str(request.base_url).rstrip("/") + "/" + short_code
+
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request, "short_url": short_url, "error": None}
+    )
+
+# ----------------------------
+# Redirect /{short_code}
+# ----------------------------
+@app.get("/{short_code}")
+async def redirect_short(short_code: str):
+    global redis_client
+    long_url = await redis_client.get(f"url:{short_code}")
+    if not long_url:
+        raise HTTPException(status_code=404, detail="This short URL has expired or doesn't exist.")
+    await redis_client.incr(f"clicks:{short_code}")
+    return RedirectResponse(url=long_url)
+
+
+@app.get("/stats/{short_code}")
+async def stats(short_code: str):
+    long_url = await redis_client.get(f"url:{short_code}")
+    if not long_url:
+        raise HTTPException(status_code=404, detail="Short code not found.")
+    clicks = await redis_client.get(f"clicks:{short_code}") or 0
+    meta = await redis_client.hgetall(f"meta:{short_code}")
+    return {
+        "short_code": short_code,
+        "long_url": long_url,
+        "clicks": int(clicks),
+        "meta": meta
+    }
