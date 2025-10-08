@@ -1,0 +1,172 @@
+    /* -------- BACKGROUND -------- */
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: "Poppins", sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top left, #e0f7ff, #e8e2ff);
+      position: relative;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* -------- CARD -------- */
+    .card {
+      position: relative;
+      z-index: 2;
+      max-width: 400px;
+      width: 90%;
+      border: none;
+      border-radius: 20px;
+      padding: 1.8rem;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      animation: fadeInUp 1s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* -------- HEADING -------- */
+    h1 {
+      font-size: 1.8rem;
+      text-align: center;
+      font-weight: 700;
+      color: #333;
+      position: relative;
+      margin-bottom: 1rem;
+      animation: glowIn 1.2s ease-in-out;
+    }
+
+    h1 a {
+      color: inherit;
+      text-decoration: none;
+      position: relative;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    h1 a:hover {
+      color: #007bff;
+      text-shadow: 0 0 10px #007bff, 0 0 20px #6610f2;
+      transform: scale(1.05);
+    }
+
+    @keyframes glowIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* -------- INPUTS -------- */
+    .input-group-text {
+      background: #f1f1f1;
+      border: none;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      box-shadow: 0 0 10px rgba(0, 97, 255, 0.4);
+      border-color: #007bff;
+    }
+
+    /* -------- BUTTON -------- */
+    .btn-primary {
+      background: linear-gradient(90deg, #007bff, #6610f2);
+      border: none;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    /* Loader inside button */
+    .btn-loader {
+      display: none;
+      border: 2px solid #fff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading .btn-loader {
+      display: inline-block;
+    }
+
+    .loading .btn-text {
+      opacity: 0.7;
+    }
+
+    /* -------- RESULT -------- */
+    .alert {
+      animation: fadeUp 0.8s ease;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* -------- FOOTER -------- */
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 1rem;
+    }

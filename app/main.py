@@ -5,11 +5,12 @@ import secrets
 import string
 from datetime import datetime
 from typing import Optional
-
+from pathlib import Path
 # fastapi imports
 from fastapi import FastAPI, HTTPException, Request, status, Form
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.redis_client import init_redis_pool, redis_client,close_redis
                 
@@ -42,8 +43,12 @@ def valid_alias(alias: str) -> bool:
     return bool(ALIAS_RE.fullmatch(alias))
 
             
-app = FastAPI(title="URL Shortener (FastAPI + Redis)",lifespan=lifespan_redis)
-
+app = FastAPI(title="URL Shortener (FastAPI + Redis)",lifespan=lifespan_redis,debug=True)
+app.mount(
+    "/static",
+    StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
+    name="static",
+)
 
 # ----------------------------
 # Helper: Client ID for rate limiting
@@ -56,11 +61,21 @@ def get_client_id(request: Request) -> str:
         return request.client.host
     return "anonymous"
 
+# --------------
+# ttl conversion
+# --------------
+def format_ttl(ttl: int) -> str:
+    """Convert seconds to a readable duration (e.g., '2 hours', '1 day')."""
+    if ttl == 0:
+        return "as long as you want"
+    else:
+        days = ttl // 86400
+        return f"{days} day{'s' if days != 1 else ''}"
 
 # ----------------------------
 # Simple rate limiter (10 req/min)
 # ----------------------------
-async def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
+async def check_rate_limit(client_id: str, limit: int = 10, period_seconds:int=60):
     from app.redis_client import redis_client  # ensure you're using the same instance
     if not redis_client:
         raise HTTPException(status_code=500, detail="Redis not initialized")
@@ -87,72 +102,73 @@ def home(request: Request):
 async def shorten_url(
     request: Request,
     original_url: str = Form(...),
-    custom_alias: Optional[str] = Form(None)
+    custom_alias: Optional[str] = Form(None),
+    ttl: int = Form(...)
 ):
     client_id = get_client_id(request)
-    await check_rate_limit(client_id, limit=10, period_seconds=60)
+    await check_rate_limit(client_id, limit=10, period_seconds=ttl)
 
-    # Validate and normalize URL
+    # Normalize URL
     if not original_url.startswith(("http://", "https://")):
         original_url = "http://" + original_url
     long_url = original_url.strip()
     created_at = datetime.utcnow().isoformat()
 
-    # Handle custom alias
+    # --- Handle custom alias ---
     if custom_alias:
         custom_alias = custom_alias.strip()
         if not valid_alias(custom_alias):
             return templates.TemplateResponse(
                 "index.html",
-                {
-                    "request": request,
-                    "short_url": None,
-                    "error": "Invalid alias. Use A-Z, a-z, 0-9, _ or -"
-                }
+                {"request": request, "short_url": None, "error": "Invalid alias. Use A-Z, a-z, 0-9, _ or -"}
             )
-
-        ok = await redis_client.set(f"url:{custom_alias}", long_url, nx=True)
+        ok = await redis_client.set(f"url:{custom_alias}", long_url, nx=True, ex=ttl)
         if not ok:
             return templates.TemplateResponse(
                 "index.html",
-                {
-                    "request": request,
-                    "short_url": None,
-                    "error": "Alias already in use."
-                }
+                {"request": request, "short_url": None, "error": "Alias already in use."}
             )
         short_code = custom_alias
     else:
-        # Generate random 6-character alphanumeric code
+        # --- Generate random 6-character code ---
         alphabet = string.ascii_letters + string.digits
         while True:
             short_code = ''.join(secrets.choice(alphabet) for _ in range(6))
             if not await redis_client.exists(f"url:{short_code}"):
                 break
-
-        # Store mapping
+    # --- Store main URL ---
+    if ttl and int(ttl) > 0:
+        await redis_client.setex(f"url:{short_code}", int(ttl), long_url)
+    else:
         await redis_client.set(f"url:{short_code}", long_url)
 
-    # Store metadata + click counter
+    # --- Metadata ---
     await redis_client.hset(
         f"meta:{short_code}",
-        mapping={"created_at": created_at, "owner": client_id}
+        mapping={"created_at": created_at, "owner": client_id, "ttl": ttl}
     )
-    await redis_client.set(f"clicks:{short_code}", 0)
+    if ttl and int(ttl) > 0:
+        await redis_client.expire(f"meta:{short_code}", int(ttl))
 
-    # Optional: expiry (7 days * 24 hrs * 60 mins * 60 secs)
-    EXPIRY_SECONDS = 60
-    await redis_client.expire(f"url:{short_code}", EXPIRY_SECONDS)
-    await redis_client.expire(f"meta:{short_code}", EXPIRY_SECONDS)
-    await redis_client.expire(f"clicks:{short_code}", EXPIRY_SECONDS)
+    # --- Click counter ---
+    await redis_client.set(f"clicks:{short_code}", 0)
+    if ttl and int(ttl) > 0:
+        await redis_client.expire(f"clicks:{short_code}", int(ttl))
+
+    # --- Optional: rate limit key per URL ---
+    if ttl and int(ttl) > 0:
+        await redis_client.setex(f"rate:{client_id}:{short_code}", int(ttl), 0)
+    else:
+        await redis_client.set(f"rate:{client_id}:{short_code}", 0)
+    
+    readable_ttl = format_ttl(ttl)
 
     short_url = str(request.base_url).rstrip("/") + "/" + short_code
-
+    readable_ttl = format_ttl(ttl)
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "short_url": short_url, "error": None}
+        {"request": request, "short_url": short_url, "error": None,"readable_ttl":readable_ttl}
     )
-
 # ----------------------------
 # Redirect /{short_code}
 # ----------------------------
