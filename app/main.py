@@ -92,12 +92,6 @@ def pricing(request:Request):
 @app.get('/about')
 def about(request:Request):
     return templates.TemplateResponse("about.html",{"request": request, "short_url": None, "error": None})
-@app.get('/contact')
-def contact(request:Request):
-    return templates.TemplateResponse("contact.html",{"request": request, "short_url": None, "error": None})
-@app.get('/dashboard')
-def dashboard(request:Request):
-    return templates.TemplateResponse("dashboard.html",{"request": request, "short_url": None, "error": None})
 
 # ----------------------------
 # POST /shorten
