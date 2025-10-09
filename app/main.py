@@ -133,7 +133,9 @@ async def shorten_url(
     # Metadata
     redis_client.hset(
         f"meta:{short_code}",
-        mapping={"created_at": created_at, "owner": client_id, "ttl": ttl}
+        "created_at", created_at,
+        "owner", client_id,
+        "ttl", ttl
     )
     redis_client.expire(f"meta:{short_code}", ttl)
 
