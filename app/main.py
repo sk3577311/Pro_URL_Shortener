@@ -58,16 +58,27 @@ def format_ttl(ttl: int) -> str:
     days = ttl // 86400
     return f"{days} day{'s' if days != 1 else ''}"
 
+
 # ----------------------------
 # Rate limiter (10 req/min)
 # ----------------------------
-async def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
+def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
     key = f"rate:{client_id}"
-    count = redis_client.incr(key)
-    if count == 1:
-        redis_client.expire(key, period_seconds)
-    if count > limit:
-        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+    try:
+        # Increment request count
+        count = redis_client.incr(key)
+        # Set expiry window if new
+        if count == 1:
+            redis_client.expire(key, period_seconds)
+        # Check limit
+        if count > limit:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Rate limit exceeded: Only {limit} requests allowed per {period_seconds} seconds."
+            )
+    except Exception as e:
+        print(f"[RateLimit Error] {e}")
+
 
 # ----------------------------
 # Homepage
