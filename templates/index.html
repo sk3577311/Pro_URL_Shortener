@@ -1,94 +1,69 @@
 {% extends "base.html" %}
-{% block title %}Shortify - Smarter Links in Seconds{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', path='css/index.css') }}">
-{% endblock %}
-
 {% block content %}
-<!-- 🌈 HERO SECTION -->
-<section class="hero-section text-center text-light d-flex align-items-center justify-content-center">
-  <div class="container">
-    <h1 class="display-4 fw-bold mb-3 animate-slide-up">Shorten. Share. Track.</h1>
-    <p class="lead mb-5 animate-fade-in">
-      A smarter, faster, and beautiful way to share links — built with ❤️ using <strong>FastAPI</strong> and <strong>Redis</strong>.
-    </p>
+<section class="hero-section text-center d-flex align-items-center justify-content-center flex-column">
+  <div class="hero-container p-4 rounded-4 shadow-lg bg-white bg-opacity-75">
+    <h1 class="fw-bold mb-3 text-dark">
+      Smarter, Faster, and Beautiful Links — built with ❤️ using FastAPI & Redis
+    </h1>
 
-    <!-- Shorten URL Box -->
-    <div class="shorten-box mx-auto shadow-lg animate-fade-in">
-      <form id="url-shortener-form" action="/shorten" method="post" class="p-3">
-        <div class="input-group mb-3">
-          <input type="text" class="form-control form-control-lg" name="original_url"
-            placeholder="Paste your long URL here..." required>
-          <button type="submit" class="btn btn-primary btn-lg">
-            <i class="bi bi-magic"></i> Shorten
-          </button>
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-2">
-            <input type="text" class="form-control" name="custom_alias" placeholder="Custom alias (optional)">
-          </div>
-          <div class="col-md-6 mb-2">
-            <select name="ttl" class="form-select">
-              <option disabled selected>Link validity</option>
-              <option value="86400">1 day</option>
-              <option value="259200">3 days</option>
-              <option value="604800">7 days</option>
-              <option value="2592000">30 days</option>
-              <option value="0">Unlimited</option>
-            </select>
-          </div>
-        </div>
-      </form>
-
-      {% if short_url %}
-      <div class="alert alert-success mt-3 small text-center animate-fade-in">
-        <strong>Short link:</strong>
-        <input id="short-url" type="text" class="form-control text-center my-2" readonly value="{{ short_url }}">
-        <button class="btn btn-outline-light btn-sm" onclick="copyToClipboard()">Copy</button>
+    <form id="url-shortener-form" class="w-100" action="/shorten" method="post">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control form-control-lg" name="original_url"
+          placeholder="Paste your long URL here..." required />
+        <button type="submit" class="btn btn-primary btn-lg px-4">
+          <i class="bi bi-stars"></i> Shorten
+        </button>
       </div>
-      {% endif %}
+
+      <div class="d-flex gap-2">
+        <input type="text" class="form-control" name="custom_alias" placeholder="Custom alias (optional)">
+        <select name="ttl" class="form-select">
+          <option disabled selected>Link validity</option>
+          <option value="86400">1 day</option>
+          <option value="259200">3 days</option>
+          <option value="604800">7 days</option>
+          <option value="2592000">30 days</option>
+          <option value="0">Unlimited</option>
+        </select>
+      </div>
+    </form>
+
+    {% if short_url %}
+    <div class="alert alert-success mt-3">
+      <strong>Shortened URL:</strong>
+      <div class="input-group mt-2">
+        <input type="text" id="short-url" class="form-control" value="{{ short_url }}" readonly />
+        <button class="btn btn-outline-secondary" onclick="copyToClipboard()"><i class="bi bi-clipboard"></i></button>
+      </div>
     </div>
+    {% elif error %}
+    <div class="alert alert-danger mt-3">
+      <i class="bi bi-exclamation-triangle"></i> {{ error }}
+    </div>
+    {% endif %}
   </div>
-  <canvas id="floating-bg"></canvas>
 </section>
 
-<!-- ⚡ FEATURES SECTION -->
-<section class="features-section text-center py-5">
+<section class="features-section py-5 text-center">
   <div class="container">
-    <h2 class="fw-bold mb-5 text-primary">Why Choose Shortify?</h2>
+    <h2 class="fw-bold mb-4">Why Choose Shortify?</h2>
     <div class="row g-4">
       <div class="col-md-4">
-        <div class="feature-card p-4 shadow-sm">
-          <i class="bi bi-speedometer2 display-5 text-primary"></i>
-          <h5 class="mt-3">Blazing Fast</h5>
-          <p>Built with FastAPI and Upstash Redis for instant redirection.</p>
-        </div>
+        <i class="bi bi-speedometer2 fs-1 text-primary"></i>
+        <h5 class="mt-2">Blazing Fast</h5>
+        <p>Powered by FastAPI & Redis for lightning-speed redirects.</p>
       </div>
       <div class="col-md-4">
-        <div class="feature-card p-4 shadow-sm">
-          <i class="bi bi-shield-check display-5 text-primary"></i>
-          <h5 class="mt-3">Secure & Reliable</h5>
-          <p>We store only what’s needed — privacy-first link shortening.</p>
-        </div>
+        <i class="bi bi-shield-check fs-1 text-primary"></i>
+        <h5 class="mt-2">Secure & Reliable</h5>
+        <p>Privacy-first design — your data, your control.</p>
       </div>
       <div class="col-md-4">
-        <div class="feature-card p-4 shadow-sm">
-          <i class="bi bi-bar-chart-line display-5 text-primary"></i>
-          <h5 class="mt-3">Analytics Ready</h5>
-          <p>Track clicks, TTL, and performance — coming soon.</p>
-        </div>
+        <i class="bi bi-bar-chart-line fs-1 text-primary"></i>
+        <h5 class="mt-2">Analytics Ready</h5>
+        <p>Track clicks, TTL, and performance metrics easily.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- 🌍 CTA SECTION -->
-<section class="cta-section text-center py-5 bg-gradient text-light">
-  <div class="container">
-    <h2 class="fw-bold mb-3">Start Shortening Smarter</h2>
-    <p class="lead mb-4">Join thousands of developers using Shortify for quick and smart URL management.</p>
-    <a href="/pricing" class="btn btn-light btn-lg fw-bold">View Pricing</a>
   </div>
 </section>
 {% endblock %}

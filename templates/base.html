@@ -1,52 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}Shortify - Smarter Links{% endblock %}</title>
+  <title>{{ title if title else "Shortify - Smarter Links" }}</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
-  {% block extra_css %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 
 <body>
-  <!-- 🌈 Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-gradient shadow-sm fixed-top">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-3 fixed-top">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">
+      <a class="navbar-brand fw-bold text-white" href="/">
         <i class="bi bi-link-45deg"></i> Shortify
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link {% if request.url.path == '/' %}active{% endif %}" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link {% if request.url.path == '/pricing' %}active{% endif %}" href="/pricing">Pricing</a></li>
-          <li class="nav-item"><a class="nav-link {% if request.url.path == '/about' %}active{% endif %}" href="/about">About</a></li>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="/pricing">Pricing</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="/about">About</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="container-fluid page-content">
+  <!-- MAIN -->
+  <main class="content">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer class="text-center py-4 mt-5 bg-light border-top">
-    <p class="mb-0">Built with ❤️ by <strong>Sameer</strong> | Powered by FastAPI + Upstash Redis</p>
+  <!-- FOOTER -->
+  <footer class="text-center py-3 mt-5 text-muted">
+    Built with ❤️ by <strong>Sameer</strong> | Powered by FastAPI + Redis
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
