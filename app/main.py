@@ -1,19 +1,18 @@
 # app/main.py
 import os
 import re
-import secrets
-import string
+import string, secrets
 from datetime import datetime
 from typing import Optional
 from pathlib import Path
-
+# fastapi imports
 from fastapi import FastAPI, HTTPException, Request, Form
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse,JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-
 # Upstash Redis client
 from app.redis_client import redis_client
+
 
 # ----------------------------
 # Template setup
@@ -23,20 +22,20 @@ templates = Jinja2Templates(directory="templates")
 # ----------------------------
 # Alias validation
 # ----------------------------
-ALIAS_RE = re.compile(r"^[A-Za-z0-9_-]{3,100}$")
-
-def valid_alias(alias: str) -> bool:
-    return bool(ALIAS_RE.fullmatch(alias))
-
-# ----------------------------
-# FastAPI app
-# ----------------------------
 app = FastAPI(title="URL Shortener (FastAPI + Upstash Redis)", debug=True)
 app.mount(
     "/static",
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
     name="static",
 )
+
+# ----------------------------
+# Alias validation
+# ----------------------------
+ALIAS_RE = re.compile(r"^[A-Za-z0-9_-]{3,100}$")
+
+def valid_alias(alias: str) -> bool:
+    return bool(ALIAS_RE.fullmatch(alias))
 
 # ----------------------------
 # Helper: Client ID for rate limiting
@@ -81,22 +80,24 @@ def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
 
 
 # ----------------------------
-# Homepage
+# Homepage and other pages
 # ----------------------------
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     return templates.TemplateResponse(
-        "index.html", {"request": request, "short_url": None, "error": None}
-    )
-
-# ----------------------------
-# Ping (Test Redis connection)
-# ----------------------------
-@app.get("/ping")
-async def ping():
-    redis_client.set("test", "hello", ex=30)
-    value = redis_client.get("test")
-    return {"redis_status": value}
+        "index.html", {"request": request, "short_url": None, "error": None})
+@app.get('/pricing')
+def pricing(request:Request):
+    return templates.TemplateResponse("pricing.html",{"request": request, "short_url": None, "error": None})
+@app.get('/about')
+def about(request:Request):
+    return templates.TemplateResponse("about.html",{"request": request, "short_url": None, "error": None})
+@app.get('/contact')
+def contact(request:Request):
+    return templates.TemplateResponse("contact.html",{"request": request, "short_url": None, "error": None})
+@app.get('/dashboard')
+def dashboard(request:Request):
+    return templates.TemplateResponse("dashboard.html",{"request": request, "short_url": None, "error": None})
 
 # ----------------------------
 # POST /shorten
@@ -186,3 +187,10 @@ async def stats(short_code: str):
         "clicks": int(clicks),
         "meta": meta
     }
+
+# Analytics page
+@app.get("/analytics/{code}", response_class=HTMLResponse)
+def analytics_page(request: Request, code: str):
+    meta = redis_client.hgetall(f"meta:{code}") or {}
+    clicks = redis_client.get(f"clicks:{code}") or 0
+    return templates.TemplateResponse("analytics.html", {"request": request, "code": code, "meta": meta, "clicks": int(clicks)})

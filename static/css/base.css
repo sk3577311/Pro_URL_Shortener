@@ -1,0 +1,31 @@
+/* base.css */
+body {
+  font-family: 'Poppins', sans-serif;
+  padding-top: 70px; /* for fixed navbar */
+  background: linear-gradient(135deg, #f9fbff, #eef2f8);
+  min-height: 100vh;
+}
+
+.bg-gradient {
+  background: linear-gradient(90deg, #007bff, #6610f2);
+}
+
+.navbar-brand {
+  color: #fff !important;
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.page-content {
+  padding: 80px 0;
+}
