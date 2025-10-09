@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 redis>=4.6
 jinja2
+dotenv
