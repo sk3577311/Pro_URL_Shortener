@@ -63,9 +63,9 @@ def format_ttl(ttl: int) -> str:
 # ----------------------------
 async def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
     key = f"rate:{client_id}"
-    count = await redis_client.incr(key)
+    count = redis_client.incr(key)
     if count == 1:
-        await redis_client.expire(key, period_seconds)
+        redis_client.expire(key, period_seconds)
     if count > limit:
         raise HTTPException(status_code=429, detail="Rate limit exceeded")
 
@@ -83,8 +83,8 @@ def home(request: Request):
 # ----------------------------
 @app.get("/ping")
 async def ping():
-    await redis_client.set("test", "hello", ex=30)
-    value = await redis_client.get("test")
+    redis_client.set("test", "hello", ex=30)
+    value = redis_client.get("test")
     return {"redis_status": value}
 
 # ----------------------------
@@ -98,7 +98,7 @@ async def shorten_url(
     ttl: int = Form(...)
 ):
     client_id = get_client_id(request)
-    await check_rate_limit(client_id, limit=10, period_seconds=60)
+    check_rate_limit(client_id, limit=10, period_seconds=60)
 
     # Normalize URL
     if not original_url.startswith(("http://", "https://")):
@@ -114,7 +114,7 @@ async def shorten_url(
                 "index.html",
                 {"request": request, "short_url": None, "error": "Invalid alias (A-Z, a-z, 0-9, _ or - only)."}
             )
-        ok = await redis_client.set(f"url:{custom_alias}", long_url, nx=True, ex=ttl)
+        ok = redis_client.set(f"url:{custom_alias}", long_url, nx=True, ex=ttl)
         if not ok:
             return templates.TemplateResponse(
                 "index.html",
@@ -126,19 +126,19 @@ async def shorten_url(
         alphabet = string.ascii_letters + string.digits
         while True:
             short_code = ''.join(secrets.choice(alphabet) for _ in range(6))
-            if not await redis_client.exists(f"url:{short_code}"):
+            if not redis_client.exists(f"url:{short_code}"):
                 break
-        await redis_client.set(f"url:{short_code}", long_url, ex=ttl)
+        redis_client.set(f"url:{short_code}", long_url, ex=ttl)
 
     # Metadata
-    await redis_client.hset(
+    redis_client.hset(
         f"meta:{short_code}",
         mapping={"created_at": created_at, "owner": client_id, "ttl": ttl}
     )
-    await redis_client.expire(f"meta:{short_code}", ttl)
+    redis_client.expire(f"meta:{short_code}", ttl)
 
     # Click counter
-    await redis_client.set(f"clicks:{short_code}", 0, ex=ttl)
+    redis_client.set(f"clicks:{short_code}", 0, ex=ttl)
 
     readable_ttl = format_ttl(ttl)
     short_url = str(request.base_url).rstrip("/") + "/" + short_code
@@ -153,10 +153,10 @@ async def shorten_url(
 # ----------------------------
 @app.get("/{short_code}")
 async def redirect_short(short_code: str):
-    long_url = await redis_client.get(f"url:{short_code}")
+    long_url = redis_client.get(f"url:{short_code}")
     if not long_url:
         raise HTTPException(status_code=404, detail="This short URL has expired or doesn't exist.")
-    await redis_client.incr(f"clicks:{short_code}")
+    redis_client.incr(f"clicks:{short_code}")
     return RedirectResponse(url=long_url)
 
 # ----------------------------
@@ -164,11 +164,11 @@ async def redirect_short(short_code: str):
 # ----------------------------
 @app.get("/stats/{short_code}")
 async def stats(short_code: str):
-    long_url = await redis_client.get(f"url:{short_code}")
+    long_url = redis_client.get(f"url:{short_code}")
     if not long_url:
         raise HTTPException(status_code=404, detail="Short code not found.")
-    clicks = await redis_client.get(f"clicks:{short_code}") or 0
-    meta = await redis_client.hgetall(f"meta:{short_code}")
+    clicks = redis_client.get(f"clicks:{short_code}") or 0
+    meta = redis_client.hgetall(f"meta:{short_code}")
     return {
         "short_code": short_code,
         "long_url": long_url,
