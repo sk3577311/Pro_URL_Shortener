@@ -1,35 +1,27 @@
 {% extends "base.html" %}
+{% block title %}Pricing - Shortly{% endblock %}
 {% block content %}
-<section class="pricing-section text-center text-dark py-5">
-  <div class="container mt-5 pt-5">
-    <h1 class="fw-bold mb-4">Simple, Transparent Pricing</h1>
-    <p class="mb-5 text-muted">Choose a plan that fits your needs. No hidden fees.</p>
-
-    <div class="row justify-content-center g-4">
-      <!-- Free Plan -->
+<section class="py-5 text-center bg-light">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Simple Pricing</h2>
+    <div class="row justify-content-center">
       <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body">
-            <h4 class="fw-bold">Free</h4>
-            <h2 class="text-primary fw-bold">$0</h2>
-            <p>Perfect for individuals and hobby projects.</p>
-            <ul class="list-unstyled text-start">
-              <li><i class="bi bi-check-circle text-success"></i> 100 links/month</li>
-              <li><i class="bi bi-check-circle text-success"></i> Basic analytics</li>
-              <li><i class="bi bi-check-circle text-success"></i> 7-day link expiry</li>
-            </ul>
-            <button class="btn btn-outline-primary mt-3">Get Started</button>
-          </div>
+        <div class="card p-4 shadow-sm">
+          <h4>Free Plan</h4>
+          <p>Shorten unlimited URLs with basic analytics.</p>
+          <h3>$0/month</h3>
+          <button class="btn btn-primary">Get Started</button>
         </div>
       </div>
-
-      <!-- Pro Plan -->
       <div class="col-md-4">
-        <div class="card shadow-lg border-primary h-100">
-          <div class="card-body">
-            <h4 class="fw-bold text-primary">Pro</h4>
-            <h2 class="text-primary fw-bold">$9<span class="fs-6">/mo</span></h2>
-            <p>Best for startups & professionals.</p>
-            <ul class="list-unstyled text-start">
-              <li><i class="bi bi-check-circle text-success"></i> Unlimited short links</li>
-              <li><i class="bi bi
+        <div class="card p-4 shadow-sm">
+          <h4>Pro Plan</h4>
+          <p>Custom domains, link tracking, and API access.</p>
+          <h3>$9/month</h3>
+          <button class="btn btn-outline-primary">Upgrade</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

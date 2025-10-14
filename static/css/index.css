@@ -262,3 +262,39 @@ footer {
   transform: translateY(-6px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
+
+/* HERO SECTION */
+.hero-section {
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  color: white;
+  padding: 120px 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.shorten-box {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  max-width: 650px;
+  margin: auto;
+}
+
+.feature-card {
+  border-radius: 15px;
+  background: white;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: fadeInUp 1s ease; }
+.animate-fade-in { animation: fadeInUp 1.3s ease; }
+
