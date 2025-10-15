@@ -1,7 +1,7 @@
 /* base.css */
 body {
   font-family: 'Poppins', sans-serif;
-  padding-top: 70px; /* for fixed navbar */
+  /* padding-top: 70px;  */
   background: linear-gradient(135deg, #f9fbff, #eef2f8);
   min-height: 100vh;
 }
