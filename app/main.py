@@ -10,6 +10,7 @@ from fastapi import FastAPI, HTTPException, Request, Form
 from fastapi.responses import RedirectResponse, HTMLResponse,JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 # Upstash Redis client
 from app.redis_client import redis_client
 #auth router
@@ -30,7 +31,18 @@ app.mount(
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
     name="static",
 )
+
+# auth router
 app.include_router(auth_router)
+
+# 🔒 Add session middleware for OAuth
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SESSION_SECRET", "supersecretkey"),  # use a real secret in production
+    same_site="lax",
+    https_only=False  # set True if using HTTPS
+)
+
 
 # ----------------------------
 # Alias validation
