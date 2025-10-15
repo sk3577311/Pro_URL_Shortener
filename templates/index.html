@@ -1,43 +1,55 @@
+<!-- templates/index.html -->
 {% extends "base.html" %}
+{% block title %}Shortify — Shorten Links{% endblock %}
 {% block content %}
+<section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+  <div class="container mx-auto px-6 text-center">
+    <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4">Create links that perform with our powerful URL Shortener</h1>
+    <p class="text-lg text-blue-100 mb-8">Spark instant connections with your audience using trustworthy, trackable links.</p>
 
-<section class="bg-gradient-to-r from-primary to-secondary text-white py-28 text-center">
-  <div class="container mx-auto px-6">
-    <h1 class="text-4xl md:text-5xl font-extrabold mb-4">
-      Create links that perform with our powerful URL Shortener
-    </h1>
-    <p class="text-lg text-gray-100 mb-8">
-      Spark instant connections with your audience using trustworthy, trackable links.
-    </p>
+    <div class="mx-auto max-w-4xl">
+      <form id="shorten-form" class="bg-white rounded-xl p-4 flex flex-col md:flex-row gap-3 items-center shadow-lg" method="post" action="/shorten">
+        <input name="original_url" id="original_url" type="text" placeholder="Paste your long URL here." class="flex-1 px-4 py-3 rounded-md border text-gray-700" required>
+        <input name="custom_alias" id="custom_alias" type="text" placeholder="Custom alias (optional)" class="w-48 px-4 py-3 rounded-md border text-gray-700">
+        <select name="ttl" id="ttl" class="px-4 py-3 rounded-md border text-gray-700">
+          <option value="0">Link validity</option>
+          <option value="86400">1 day</option>
+          <option value="259200">3 days</option>
+          <option value="604800">7 days</option>
+          <option value="2592000">30 days</option>
+        </select>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-semibold" id="shorten-btn">Shorten Link</button>
+      </form>
 
-    <form id="url-shortener-form" class="max-w-3xl mx-auto bg-white rounded-xl p-5 flex flex-col md:flex-row gap-3 shadow-lg">
-      <input type="text" name="original_url" placeholder="Paste your long URL here..."
-        class="flex-grow px-4 py-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-primary" required>
-      <input type="text" name="custom_alias" placeholder="Custom alias (optional)"
-        class="px-4 py-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-primary">
-      <select name="ttl" class="border border-gray-300 rounded-lg px-3 py-3 text-gray-800 focus:ring-2 focus:ring-primary">
-        <option disabled selected>Link validity</option>
-        <option value="86400">1 day</option>
-        <option value="604800">7 days</option>
-        <option value="2592000">30 days</option>
-        <option value="0">Unlimited</option>
-      </select>
-      <button type="submit"
-        class="bg-primary hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md">
-        Shorten Link
-      </button>
-    </form>
-
-    {% if short_url %}
-    <div class="mt-6">
-      <p class="text-sm">Your shortened URL:</p>
-      <div class="flex justify-center mt-2">
-        <input id="short-url" class="px-4 py-2 rounded-l-md border border-gray-300 w-72 text-gray-800" value="{{ short_url }}" readonly>
-        <button onclick="copyToClipboard()" class="bg-blue-600 text-white px-4 rounded-r-md">Copy</button>
+      <!-- result area -->
+      <div id="result" class="mt-4 hidden">
+        <div class="bg-white rounded-lg p-3 inline-flex items-center gap-2 shadow">
+          <input id="short-url" readonly class="text-blue-600 font-medium bg-transparent border-none focus:outline-none" />
+          <button onclick="copyToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md">Copy</button>
+          <a id="open-link" target="_blank" class="text-sm text-gray-600 hover:underline ml-2">Open</a>
+        </div>
       </div>
     </div>
-    {% endif %}
   </div>
 </section>
 
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-6">
+    <h2 class="text-3xl font-bold text-center text-blue-600 mb-8">Why Choose Shortify?</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="p-6 rounded-lg shadow-sm text-center">
+        <h4 class="font-semibold mb-2">Blazing Fast</h4>
+        <p class="text-sm text-gray-600">Powered by FastAPI & Upstash Redis.</p>
+      </div>
+      <div class="p-6 rounded-lg shadow-sm text-center">
+        <h4 class="font-semibold mb-2">Secure</h4>
+        <p class="text-sm text-gray-600">Privacy-first link handling and expiration.</p>
+      </div>
+      <div class="p-6 rounded-lg shadow-sm text-center">
+        <h4 class="font-semibold mb-2">Analytics Ready</h4>
+        <p class="text-sm text-gray-600">Easy to extend with click tracking & dashboards.</p>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}

@@ -267,31 +267,32 @@ footer {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* HERO SECTION */
-.hero-section {
-  background: linear-gradient(135deg, #007bff, #6610f2);
-  color: white;
-  padding: 120px 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+/* static/css/index.css - input thickness and small style fixes */
+input[type="text"], input[type="url"], select {
+  /* thinner appearance */
+  border-width: 1px;
+  border-color: rgba(148,163,184,0.4);
+  padding: 0.72rem 0.9rem;
 }
 
-.shorten-box {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  max-width: 650px;
-  margin: auto;
+/* make the form controls look less 'thick' */
+.shorten-box input, .shorten-box select {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
 }
 
-.feature-card {
-  border-radius: 15px;
-  background: white;
-  transition: transform 0.3s, box-shadow 0.3s;
+/* result area styles */
+#result .bg-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+/* small responsive tweak */
+@media (max-width: 768px) {
+  #shorten-btn {
+    width: 100%;
+  }
 }
 
 /* ANIMATIONS */

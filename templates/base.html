@@ -1,60 +1,55 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ title if title else "Shortify - URL Shortener" }}</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Shortify{% endblock %}</title>
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CDN (simple) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#2563eb',
-            secondary: '#7c3aed',
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Flowbite (optional, for components) -->
+  <link href="https://unpkg.com/flowbite@1.7.0/dist/flowbite.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/flowbite@1.7.0/dist/flowbite.js"></script>
 
-  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', path='css/index.css') }}" />
 </head>
+<body class="antialiased text-gray-800 bg-gray-50 flex flex-col min-h-screen">
 
-<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+  <!-- NAVBAR -->
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-6 py-3 flex items-center justify-between">
+      <a href="/" class="text-2xl font-extrabold text-blue-600">Shortify</a>
+      <nav class="hidden md:flex gap-6 items-center">
+        <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
+        <a href="/pricing" class="text-gray-700 hover:text-blue-600">Pricing</a>
+        <a href="/about" class="text-gray-700 hover:text-blue-600">About</a>
+        <button id="login-btn" class="text-sm text-gray-700 hover:text-blue-600" onclick="openModal('login-modal')">Login</button>
+        <button id="signup-btn" class="bg-blue-600 text-white px-4 py-1 rounded-md text-sm" onclick="openModal('signup-modal')">Sign Up</button>
+      </nav>
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow-md fixed w-full z-50">
-    <div class="container mx-auto flex justify-between items-center px-6 py-3">
-      <a href="/" class="text-2xl font-bold text-primary flex items-center gap-2">
-        <i class="bi bi-link-45deg"></i> Shortify
-      </a>
-      <ul class="hidden md:flex gap-6 text-gray-700 font-medium">
-        <li><a href="/" class="hover:text-primary">Home</a></li>
-        <li><a href="/pricing" class="hover:text-primary">Pricing</a></li>
-        <li><a href="/about" class="hover:text-primary">About</a></li>
-      </ul>
-      <div class="flex items-center gap-3">
-        <button onclick="openModal('login-modal')" class="text-sm font-medium hover:text-primary">Login</button>
-        <button onclick="openModal('signup-modal')" class="bg-primary text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Sign Up</button>
+      <!-- mobile trigger -->
+      <div class="md:hidden">
+        <button onclick="toggleMobile()" class="p-2 rounded-md border">
+          ☰
+        </button>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <main class="flex-grow pt-24">
+  <main class="flex-grow">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-gray-300 py-4 text-center text-sm mt-16">
-    Built with ❤️ by <b>Sameer</b> | Powered by <span class="text-primary">FastAPI</span> + <span class="text-secondary">Upstash Redis</span>
+  <footer class="bg-gray-900 text-gray-200 py-6">
+    <div class="container mx-auto text-center text-sm">
+      Built with ❤️ by Sameer | Powered by FastAPI + Upstash Redis
+    </div>
   </footer>
 
-  <!-- Auth Modals -->
   {% include 'modals.html' %}
 
-  <script src="{{ url_for('static', path='js/main.js') }}"></script>
+  <script src="{{ url_for('static', path='js/index.js') }}"></script>
 </body>
 </html>
