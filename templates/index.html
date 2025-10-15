@@ -19,7 +19,6 @@
       class="bg-white shadow-xl rounded-2xl p-6 md:flex md:items-center md:max-w-3xl mx-auto gap-2 transition hover:shadow-2xl flex-wrap justify-center"
       onsubmit="showLoader()"
     >
-      <!-- URL Input -->
       <input
         id="url-input"
         name="original_url"
@@ -29,7 +28,6 @@
         class="flex-grow w-full md:w-auto p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
-      <!-- Custom Alias (optional) -->
       <input
         id="alias"
         name="alias"
@@ -38,7 +36,6 @@
         class="w-full md:w-40 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
 
-      <!-- TTL / Validity Dropdown -->
       <select
         id="ttl"
         name="ttl"
@@ -50,7 +47,6 @@
         <option value="0" selected>Forever</option>
       </select>
 
-      <!-- Submit Button with Loader -->
       <button
         type="submit"
         id="shorten-btn"
@@ -81,23 +77,26 @@
       </button>
     </form>
 
-    <!-- Result Section (optional for later AJAX or redirect) -->
-     {% if short_url %}
+    <!-- RESULT SECTION -->
+    {% if short_url %}
     <div
       id="short-result"
-      class="mt-6 hidden opacity-0 transition-opacity duration-700"
+      class="mt-6 opacity-100 transition-opacity duration-700"
     >
-
       <p class="text-gray-700 text-sm mb-2">Your shortened link:</p>
+      <span class="block text-gray-600 mb-2">This link will be valid for {{ readable_ttl }}.</span>
+
       <div
         class="flex items-center justify-center gap-2 bg-gray-100 px-4 py-2 rounded-lg max-w-md mx-auto"
       >
         <a
           id="short-link"
-          href="#"
+          href="{{ short_url }}"
           class="text-blue-600 font-medium underline"
           target="_blank"
-        ></a>
+        >
+          {{ short_url }}
+        </a>
         <button
           type="button"
           onclick="copyLink()"
@@ -106,6 +105,14 @@
           📋 <span id="copy-text">Copy</span>
         </button>
       </div>
+    </div>
+    {% elif error %}
+    <div
+      id="result"
+      class="mt-4 text-red-700 bg-red-100 border border-red-300 rounded-lg px-4 py-3 max-w-md mx-auto"
+      role="alert"
+    >
+      <strong class="block mb-1">⚠️ Error:</strong> {{ error }}
     </div>
     {% endif %}
   </div>
@@ -174,22 +181,22 @@
 
 <!-- JS -->
 <script>
-function showLoader() {
-  const btn = document.getElementById("shorten-btn");
-  const btnText = document.getElementById("btn-text");
-  const btnLoader = document.getElementById("btn-loader");
+  function showLoader() {
+    const btn = document.getElementById("shorten-btn");
+    const btnText = document.getElementById("btn-text");
+    const btnLoader = document.getElementById("btn-loader");
 
-  btn.disabled = true;
-  btnText.textContent = "Shortening...";
-  btnLoader.classList.remove("hidden");
-}
+    btn.disabled = true;
+    btnText.textContent = "Shortening...";
+    btnLoader.classList.remove("hidden");
+  }
 
-function copyLink() {
-  const shortLink = document.getElementById("short-link").textContent;
-  const copyText = document.getElementById("copy-text");
-  navigator.clipboard.writeText(shortLink);
-  copyText.textContent = "Copied!";
-  setTimeout(() => (copyText.textContent = "Copy"), 1500);
-}
+  function copyLink() {
+    const shortLink = document.getElementById("short-link").textContent;
+    const copyText = document.getElementById("copy-text");
+    navigator.clipboard.writeText(shortLink);
+    copyText.textContent = "Copied!";
+    setTimeout(() => (copyText.textContent = "Copy"), 1500);
+  }
 </script>
 {% endblock %}

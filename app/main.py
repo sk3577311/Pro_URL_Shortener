@@ -86,9 +86,11 @@ def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
 def home(request: Request):
     return templates.TemplateResponse(
         "index.html", {"request": request, "short_url": None, "error": None})
+
 @app.get('/pricing')
 def pricing(request:Request):
     return templates.TemplateResponse("pricing.html",{"request": request, "short_url": None, "error": None})
+
 @app.get('/about')
 def about(request:Request):
     return templates.TemplateResponse("about.html",{"request": request, "short_url": None, "error": None})
