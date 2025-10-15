@@ -15,8 +15,9 @@ oauth.register(
     name='google',
     client_id=os.getenv("GOOGLE_CLIENT_ID"),
     client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'},
+    access_token_url='https://oauth2.googleapis.com/token',
+    authorize_url='https://accounts.google.com/o/oauth2/v2/auth',
+    client_kwargs={'scope': 'openid email profile'}
 )
 router = APIRouter()
 
@@ -26,6 +27,7 @@ async def oauth_login(request: Request, provider: str):
     import sys
     print("🔁 Redirect URI being sent:", redirect_uri, file=sys.stdout, flush=True)
     client = oauth.create_client(provider)
+    print("GOOGLE_CLIENT_ID =", os.getenv("GOOGLE_CLIENT_ID"))
     return await client.authorize_redirect(request, redirect_uri)
 
 @router.get("/auth/{provider}/callback", name="auth_callback")
