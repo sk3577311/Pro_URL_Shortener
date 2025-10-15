@@ -114,7 +114,14 @@ async def shorten_url(
     ttl: int = Form(...)
 ):
     client_id = get_client_id(request)
-    check_rate_limit(client_id, limit=5, period_seconds=60)
+    try:
+        check_rate_limit(client_id, limit=10, period_seconds=60)
+    except HTTPException as e:
+        return templates.TemplateResponse(
+            "index.html",
+            {"request": request, "short_url": None, "error": e.detail}
+        )
+    # check_rate_limit(client_id, limit=5, period_seconds=60)
 
     # Normalize URL
     if not original_url.startswith(("http://", "https://")):
