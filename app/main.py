@@ -63,21 +63,17 @@ def format_ttl(ttl: int) -> str:
 # ----------------------------
 def check_rate_limit(client_id: str, limit: int = 5, period_seconds: int = 60):
     key = f"rate:{client_id}"
-    try:
-        # Increment request count
-        count = redis_client.incr(key)
-        # Set expiry window if new
-        if count == 1:
-            redis_client.expire(key, period_seconds)
-        # Check limit
-        if count > limit:
-            raise HTTPException(
-                status_code=429,
-                detail=f"Rate limit exceeded: Only {limit} requests allowed per {period_seconds} seconds."
-            )
-    except Exception as e:
-        print(f"[RateLimit Error] {e}")
-
+    # Increment request count
+    count = redis_client.incr(key)
+    # Set expiry window if new
+    if count == 1:
+        redis_client.expire(key, period_seconds)
+    # Check limit
+    if count > limit:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Rate limit exceeded: Only {limit} requests allowed per {period_seconds} seconds."
+        )
 
 # ----------------------------
 # Homepage and other pages
