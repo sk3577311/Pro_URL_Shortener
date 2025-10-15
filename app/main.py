@@ -61,7 +61,7 @@ def format_ttl(ttl: int) -> str:
 # ----------------------------
 # Rate limiter (10 req/min)
 # ----------------------------
-def check_rate_limit(client_id: str, limit: int = 10, period_seconds: int = 60):
+def check_rate_limit(client_id: str, limit: int = 5, period_seconds: int = 60):
     key = f"rate:{client_id}"
     try:
         # Increment request count
@@ -114,7 +114,7 @@ async def shorten_url(
     ttl: int = Form(...)
 ):
     client_id = get_client_id(request)
-    check_rate_limit(client_id, limit=10, period_seconds=60)
+    check_rate_limit(client_id, limit=5, period_seconds=60)
 
     # Normalize URL
     if not original_url.startswith(("http://", "https://")):
@@ -145,9 +145,9 @@ async def shorten_url(
             if not redis_client.exists(f"url:{short_code}"):
                 break
         if ttl and ttl > 0:
-            redis_client.set(f"url :{short_code}", original_url, ex=ttl)
+            redis_client.set(f"url:{short_code}", original_url, ex=ttl)
         else:
-            redis_client.set(f"url :{short_code}", original_url)
+            redis_client.set(f"url:{short_code}", original_url)
         # redis_client.set(f"url:{short_code}", long_url, ex=ttl)
 
     # Metadata
@@ -162,9 +162,9 @@ async def shorten_url(
 
     # Click counter
     if ttl and ttl > 0:
-        redis_client.set(f"clicks :{short_code}", original_url, ex=ttl)
+        redis_client.set(f"clicks:{short_code}", original_url, ex=ttl)
     else:
-        redis_client.set(f"clicks :{short_code}", original_url)
+        redis_client.set(f"clicks:{short_code}", original_url)
     # redis_client.set(f"clicks:{short_code}", 0, ex=ttl)
 
     readable_ttl = format_ttl(ttl)
