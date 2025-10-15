@@ -95,6 +95,14 @@ def pricing(request:Request):
 def about(request:Request):
     return templates.TemplateResponse("about.html",{"request": request, "short_url": None, "error": None})
 
+@app.get('/login')
+def pricing(request:Request):
+    return templates.TemplateResponse("login.html",{"request": request, "short_url": None, "error": None})
+
+@app.get('/signup')
+def about(request:Request):
+    return templates.TemplateResponse("signup.html",{"request": request, "short_url": None, "error": None})
+
 # ----------------------------
 # POST /shorten
 # ----------------------------
@@ -137,9 +145,9 @@ async def shorten_url(
             if not redis_client.exists(f"url:{short_code}"):
                 break
         if ttl and ttl > 0:
-            await redis_client.set(f"url :{short_code}", original_url, ex=ttl)
+            redis_client.set(f"url :{short_code}", original_url, ex=ttl)
         else:
-            await redis_client.set(f"url :{short_code}", original_url)
+            redis_client.set(f"url :{short_code}", original_url)
         # redis_client.set(f"url:{short_code}", long_url, ex=ttl)
 
     # Metadata
