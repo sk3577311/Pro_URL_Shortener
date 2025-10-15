@@ -14,13 +14,14 @@
 
   <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', path='css/index.css') }}" />
-  <link rel="shortcut icon" href="{{ url_for('static', path='img/icon.png') }}" type="image/x-icon">
+  <link rel="icon" href="{{ url_for('static', path='img/icon.png') }}" type="image/png">
 </head>
 <body class="antialiased text-gray-800 bg-gray-50 flex flex-col min-h-screen">
 
   <!-- NAVBAR -->
   <header class="bg-white shadow">
     <div class="container mx-auto px-6 py-3 flex items-center justify-between">
+      <img src="{{ url_for('static', path='img/icon.png') }}" alt="Shortly Logo" class="h-8 w-8" />
       <a href="/" class="text-2xl font-extrabold text-blue-600">Shortify</a>
       <nav class="hidden md:flex gap-6 items-center">
         <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
