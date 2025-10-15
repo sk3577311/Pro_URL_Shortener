@@ -31,10 +31,6 @@ app.mount(
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
     name="static",
 )
-
-# auth router
-app.include_router(auth_router)
-
 # 🔒 Add session middleware for OAuth
 app.add_middleware(
     SessionMiddleware,
@@ -42,6 +38,10 @@ app.add_middleware(
     same_site="lax",
     https_only=False  # set True if using HTTPS
 )
+
+# auth router
+app.include_router(auth_router)
+
 
 
 # ----------------------------
