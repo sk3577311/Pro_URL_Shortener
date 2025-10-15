@@ -4,7 +4,6 @@ import secrets
 from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from starlette.responses import RedirectResponse
-from starlette.middleware.sessions import SessionMiddleware
 from fastapi import APIRouter, Request
 from app.redis_client import redis_client  # optional for session store
 

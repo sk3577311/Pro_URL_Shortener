@@ -1,118 +1,109 @@
 {% extends "base.html" %}
 {% block title %}Login — Shortly{% endblock %}
 {% block content %}
-<section class="min-h-[70vh] flex items-center justify-center py-16 bg-gray-50">
-  <div class="w-full max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-    <!-- Left: marketing -->
-    <div class="hidden md:block p-6">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3">Welcome back 👋</h2>
-      <p class="text-gray-600">Sign in to access your dashboard, manage links, and view analytics.</p>
-      <ul class="mt-6 space-y-3 text-sm text-gray-600">
-        <li>✅ FastAPI-backed auth</li>
-        <li>✅ OAuth: Google, GitHub</li>
-        <li>✅ Secure sessions & CSRF-aware forms</li>
+<section class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
+  <div class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl grid md:grid-cols-2 overflow-hidden">
+    <!-- Left Panel -->
+    <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-blue-600 to-purple-600 text-white p-12 space-y-6">
+      <div>
+        <h2 class="text-4xl font-bold">Welcome Back 👋</h2>
+        <p class="mt-2 text-blue-100">Log in to manage your shortened links, view analytics, and more.</p>
+      </div>
+      <ul class="space-y-3 text-sm text-blue-100 mt-8">
+        <li>⚡ Blazing-fast FastAPI backend</li>
+        <li>🔐 Secure sessions & CSRF protection</li>
+        <li>🌐 Google & GitHub OAuth support</li>
       </ul>
     </div>
 
-    <!-- Right: form -->
-    <div class="bg-white rounded-2xl shadow p-6">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <img src="{{ url_for('static', path='img/icon.png') }}" alt="Shortly" class="h-8 w-8" />
-          <span class="text-xl font-bold text-gray-800">Shortly</span>
-        </div>
-        <a href="/signup" class="text-sm text-blue-600 hover:underline">Create account</a>
+    <!-- Right Panel: Login Form -->
+    <div class="p-10 md:p-12 flex flex-col justify-center">
+      <div class="mb-8 text-center">
+        <img src="{{ url_for('static', path='img/icon.png') }}" class="h-10 mx-auto mb-3" alt="Shortly" />
+        <h1 class="text-2xl font-bold text-gray-800">Sign in to Shortly</h1>
       </div>
 
-      <!-- OAuth buttons -->
-      <div class="space-y-3 mb-4">
-        <a href="/auth/google" class="w-full inline-flex items-center justify-center gap-3 border rounded-lg px-4 py-2 hover:shadow-sm transition">
+      <div class="space-y-3 mb-5">
+        <a href="/auth/google" class="flex items-center justify-center w-full gap-3 border border-gray-300 rounded-lg py-3 hover:bg-gray-50 transition">
           <img src="{{ url_for('static', path='icons/google.svg') }}" class="h-5 w-5" alt="">
-          <span class="text-sm font-medium">Continue with Google</span>
+          <span class="text-sm font-medium text-gray-700">Continue with Google</span>
         </a>
       </div>
 
-      <div class="flex items-center gap-3 my-4">
-        <hr class="flex-1"/>
+      <div class="flex items-center gap-3 mb-6">
+        <hr class="flex-1 border-gray-200"/>
         <span class="text-xs text-gray-400">or</span>
-        <hr class="flex-1"/>
+        <hr class="flex-1 border-gray-200"/>
       </div>
 
-      <!-- Email form -->
-      <form id="login-form" method="POST" action="/login" class="space-y-4">
+      <form id="login-form" method="POST" action="/login" class="space-y-5">
         <div>
           <label for="email" class="block text-sm text-gray-600 mb-1">Email</label>
           <input id="email" name="email" type="email" required
-                 class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500" />
+                 class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
           <p id="email-error" class="text-xs text-red-500 mt-1 hidden">Enter a valid email</p>
         </div>
 
         <div>
           <label for="password" class="block text-sm text-gray-600 mb-1">Password</label>
           <input id="password" name="password" type="password" required minlength="6"
-                 class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500" />
+                 class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
           <p id="pw-error" class="text-xs text-red-500 mt-1 hidden">Password must be at least 6 characters</p>
         </div>
 
         <div class="flex items-center justify-between text-sm">
           <label class="inline-flex items-center gap-2 text-gray-600">
-            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-gray-300" /> Remember me
+            <input type="checkbox" name="remember" class="h-4 w-4 border-gray-300 rounded" /> Remember me
           </label>
-          <a href="/forgot" class="text-blue-600 hover:underline">Forgot?</a>
+          <a href="/forgot" class="text-blue-600 hover:underline">Forgot password?</a>
         </div>
 
-        <div>
-          <button id="login-btn" type="submit"
-                  class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-3">
-            <span id="login-text">Sign in</span>
-            <svg id="login-loader" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-          </button>
-        </div>
+        <button id="login-btn" type="submit"
+                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-3 hover:scale-[1.01] transition">
+          <span id="login-text">Sign in</span>
+          <svg id="login-loader" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+               viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </button>
 
         <div id="login-msg" class="text-sm text-center text-red-500 hidden"></div>
       </form>
+
+      <p class="text-sm text-center text-gray-600 mt-6">
+        Don’t have an account? <a href="/signup" class="text-blue-600 font-medium hover:underline">Sign up</a>
+      </p>
     </div>
   </div>
 </section>
 
 <script>
-  // Simple client validation + loader
-  const loginForm = document.getElementById('login-form');
-  const loginBtn = document.getElementById('login-btn');
-  const loginText = document.getElementById('login-text');
-  const loginLoader = document.getElementById('login-loader');
-  const loginMsg = document.getElementById('login-msg');
+  const form = document.getElementById('login-form');
+  const btn = document.getElementById('login-btn');
+  const text = document.getElementById('login-text');
+  const loader = document.getElementById('login-loader');
+  const msg = document.getElementById('login-msg');
 
-  loginForm.addEventListener('submit', (e) => {
+  form.addEventListener('submit', (e) => {
     const email = document.getElementById('email');
     const pw = document.getElementById('password');
     let ok = true;
-    loginMsg.classList.add('hidden');
+    msg.classList.add('hidden');
 
-    if (!email.value || !/^\S+@\S+\.\S+$/.test(email.value)) {
-      document.getElementById('email-error').classList.remove('hidden'); ok=false;
-    } else {
-      document.getElementById('email-error').classList.add('hidden');
-    }
+    if (!/^\S+@\S+\.\S+$/.test(email.value)) {
+      document.getElementById('email-error').classList.remove('hidden'); ok = false;
+    } else document.getElementById('email-error').classList.add('hidden');
+
     if (pw.value.length < 6) {
-      document.getElementById('pw-error').classList.remove('hidden'); ok=false;
-    } else {
-      document.getElementById('pw-error').classList.add('hidden');
-    }
-    if (!ok) {
-      e.preventDefault();
-      return;
-    }
+      document.getElementById('pw-error').classList.remove('hidden'); ok = false;
+    } else document.getElementById('pw-error').classList.add('hidden');
 
-    // show loader and permit submission to server
-    loginBtn.disabled = true;
-    loginText.textContent = 'Signing in…';
-    loginLoader.classList.remove('hidden');
-    // let the form submit normally (server will redirect on success)
+    if (!ok) { e.preventDefault(); return; }
+
+    btn.disabled = true;
+    text.textContent = 'Signing in…';
+    loader.classList.remove('hidden');
   });
 </script>
 {% endblock %}
