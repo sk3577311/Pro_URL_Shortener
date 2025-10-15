@@ -5,3 +5,4 @@ jinja2
 dotenv
 python-multipart
 upstash-redis
+authlib

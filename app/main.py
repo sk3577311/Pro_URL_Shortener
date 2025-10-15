@@ -136,7 +136,11 @@ async def shorten_url(
             short_code = ''.join(secrets.choice(alphabet) for _ in range(6))
             if not redis_client.exists(f"url:{short_code}"):
                 break
-        redis_client.set(f"url:{short_code}", long_url, ex=ttl)
+        if ttl and ttl > 0:
+            await redis_client.set(f"url :{short_code}", original_url, ex=ttl)
+        else:
+            await redis_client.set(f"url :{short_code}", original_url)
+        # redis_client.set(f"url:{short_code}", long_url, ex=ttl)
 
     # Metadata
     redis_client.hmset(
@@ -146,7 +150,11 @@ async def shorten_url(
     redis_client.expire(f"meta:{short_code}", ttl)
 
     # Click counter
-    redis_client.set(f"clicks:{short_code}", 0, ex=ttl)
+    if ttl and ttl > 0:
+        redis_client.set(f"clicks :{short_code}", original_url, ex=ttl)
+    else:
+        redis_client.set(f"clicks :{short_code}", original_url)
+    # redis_client.set(f"clicks:{short_code}", 0, ex=ttl)
 
     readable_ttl = format_ttl(ttl)
     short_url = str(request.base_url).rstrip("/") + "/" + short_code
