@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory="templates")
 # ----------------------------
 # Alias validation
 # ----------------------------
-app = FastAPI(title="URL Shortener (FastAPI + Upstash Redis)", debug=True)
+app = FastAPI(title="URL Shortener (FastAPI + Upstash Redis)")
 app.mount(
     "/static",
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
