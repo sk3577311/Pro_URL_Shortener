@@ -1,27 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Pricing - Shortly{% endblock %}
 {% block content %}
-<section class="py-5 text-center bg-light">
-  <div class="container">
-    <h2 class="fw-bold mb-4">Simple Pricing</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-4">
-        <div class="card p-4 shadow-sm">
-          <h4>Free Plan</h4>
-          <p>Shorten unlimited URLs with basic analytics.</p>
-          <h3>$0/month</h3>
-          <button class="btn btn-primary">Get Started</button>
-        </div>
+<section class="py-20 bg-gradient-to-b from-white to-gray-50 text-center">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl font-bold mb-4 text-gray-900">Simple, Transparent Pricing</h2>
+    <p class="text-gray-600 mb-12 max-w-2xl mx-auto">
+      Whether you're shortening a few links or managing campaigns — Shortly scales with you.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <!-- Free Plan -->
+      <div class="bg-white shadow-lg rounded-2xl p-8 border border-gray-100 hover:shadow-xl transition-transform hover:-translate-y-1">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-3">Free Plan</h3>
+        <p class="text-gray-600 mb-6">
+          Perfect for individuals. Shorten unlimited URLs with basic analytics.
+        </p>
+        <h4 class="text-4xl font-bold text-blue-600 mb-6">$0<span class="text-gray-500 text-lg">/month</span></h4>
+        <ul class="text-gray-600 mb-8 space-y-2 text-left">
+          <li>✔️ Unlimited URL shortening</li>
+          <li>✔️ Basic analytics</li>
+          <li>✔️ Public link dashboard</li>
+        </ul>
+        <button class="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition">
+          Get Started
+        </button>
       </div>
-      <div class="col-md-4">
-        <div class="card p-4 shadow-sm">
-          <h4>Pro Plan</h4>
-          <p>Custom domains, link tracking, and API access.</p>
-          <h3>$9/month</h3>
-          <button class="btn btn-outline-primary">Upgrade</button>
-        </div>
+
+      <!-- Pro Plan -->
+      <div class="bg-white shadow-lg rounded-2xl p-8 border border-blue-100 hover:shadow-xl transition-transform hover:-translate-y-1">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-3">Pro Plan</h3>
+        <p class="text-gray-600 mb-6">
+          For professionals and teams. Add branding, track clicks, and get API access.
+        </p>
+        <h4 class="text-4xl font-bold text-blue-600 mb-6">$9<span class="text-gray-500 text-lg">/month</span></h4>
+        <ul class="text-gray-600 mb-8 space-y-2 text-left">
+          <li>🚀 Custom domains</li>
+          <li>📊 Advanced link analytics</li>
+          <li>🔑 API & developer access</li>
+          <li>📈 Priority support</li>
+        </ul>
+        <button class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition">
+          Upgrade to Pro
+        </button>
       </div>
     </div>
+
+    <p class="mt-12 text-gray-500 text-sm">
+      No hidden fees. Cancel anytime. All plans include free SSL and analytics.
+    </p>
   </div>
 </section>
 {% endblock %}

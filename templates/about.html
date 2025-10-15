@@ -1,13 +1,39 @@
 {% extends "base.html" %}
 {% block title %}About - Shortly{% endblock %}
 {% block content %}
-<section class="py-5 text-center">
-  <div class="container">
-    <h2 class="fw-bold mb-4">About Shortly</h2>
-    <p class="lead mx-auto" style="max-width:700px;">
-      Shortly is a modern, lightweight URL shortener built using FastAPI and Redis. 
-      It allows you to shorten, manage, and track links effortlessly — inspired by Bitly, made by Sameer.
+<section class="py-20 bg-white text-center">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl font-bold text-gray-900 mb-6">About Shortly</h2>
+    <p class="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed mb-10">
+      Shortly is a modern, lightweight URL shortener built with <span class="font-semibold text-blue-600">FastAPI</span> 
+      and <span class="font-semibold text-purple-600">Redis</span>.  
+      It helps you shorten, manage, and track links effortlessly — designed for speed, simplicity, and reliability.
     </p>
+
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mt-12">
+      <div class="p-6 bg-gray-50 rounded-2xl shadow-sm hover:shadow-md transition">
+        <div class="text-blue-600 text-4xl mb-3">⚡</div>
+        <h4 class="font-semibold text-lg mb-2">Blazing Fast</h4>
+        <p class="text-gray-600">Optimized with Redis caching and async APIs for sub-millisecond performance.</p>
+      </div>
+
+      <div class="p-6 bg-gray-50 rounded-2xl shadow-sm hover:shadow-md transition">
+        <div class="text-purple-600 text-4xl mb-3">🔗</div>
+        <h4 class="font-semibold text-lg mb-2">Simple & Reliable</h4>
+        <p class="text-gray-600">Shorten links instantly — no ads, no bloat, just clean analytics and control.</p>
+      </div>
+
+      <div class="p-6 bg-gray-50 rounded-2xl shadow-sm hover:shadow-md transition">
+        <div class="text-indigo-600 text-4xl mb-3">🚀</div>
+        <h4 class="font-semibold text-lg mb-2">Built for Developers</h4>
+        <p class="text-gray-600">Full REST API with Upstash Redis, perfect for automation and integrations.</p>
+      </div>
+    </div>
+
+    <div class="mt-16">
+      <h3 class="text-2xl font-semibold mb-2 text-gray-900">Made by <span class="text-blue-600">Sameer</span></h3>
+      <p class="text-gray-500">Inspired by Bitly. Built with ❤️ using FastAPI, Tailwind, and Redis Cloud.</p>
+    </div>
   </div>
 </section>
 {% endblock %}

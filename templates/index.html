@@ -1,55 +1,198 @@
-<!-- templates/index.html -->
 {% extends "base.html" %}
-{% block title %}Shortify — Shorten Links{% endblock %}
+{% block title %}Shortly - Fast & Smart URL Shortener{% endblock %}
 {% block content %}
-<section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
-  <div class="container mx-auto px-6 text-center">
-    <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4">Create links that perform with our powerful URL Shortener</h1>
-    <p class="text-lg text-blue-100 mb-8">Spark instant connections with your audience using trustworthy, trackable links.</p>
-
-    <div class="mx-auto max-w-4xl">
-      <form id="shorten-form" class="bg-white rounded-xl p-4 flex flex-col md:flex-row gap-3 items-center shadow-lg" method="post" action="/shorten">
-        <input name="original_url" id="original_url" type="text" placeholder="Paste your long URL here." class="flex-1 px-4 py-3 rounded-md border text-gray-700" required>
-        <input name="custom_alias" id="custom_alias" type="text" placeholder="Custom alias (optional)" class="w-48 px-4 py-3 rounded-md border text-gray-700">
-        <select name="ttl" id="ttl" class="px-4 py-3 rounded-md border text-gray-700">
-          <option value="0">Link validity</option>
-          <option value="86400">1 day</option>
-          <option value="259200">3 days</option>
-          <option value="604800">7 days</option>
-          <option value="2592000">30 days</option>
-        </select>
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-semibold" id="shorten-btn">Shorten Link</button>
-      </form>
-
-      <!-- result area -->
-      <div id="result" class="mt-4 hidden">
-        <div class="bg-white rounded-lg p-3 inline-flex items-center gap-2 shadow">
-          <input id="short-url" readonly class="text-blue-600 font-medium bg-transparent border-none focus:outline-none" />
-          <button onclick="copyToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md">Copy</button>
-          <a id="open-link" target="_blank" class="text-sm text-gray-600 hover:underline ml-2">Open</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="py-16 bg-white">
+<!-- HERO SECTION -->
+<section class="bg-gradient-to-b from-blue-50 to-white py-20 text-center relative overflow-hidden">
   <div class="container mx-auto px-6">
-    <h2 class="text-3xl font-bold text-center text-blue-600 mb-8">Why Choose Shortify?</h2>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="p-6 rounded-lg shadow-sm text-center">
-        <h4 class="font-semibold mb-2">Blazing Fast</h4>
-        <p class="text-sm text-gray-600">Powered by FastAPI & Upstash Redis.</p>
+    <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight animate-fade-in">
+      Shorten. Share. <span class="text-blue-600">Track.</span>
+    </h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
+      Transform long, messy URLs into clean, shareable links — powered by FastAPI & Redis.
+    </p>
+
+    <!-- URL SHORTENER INPUT -->
+    <div
+      class="bg-white shadow-xl rounded-2xl p-4 md:flex md:items-center md:max-w-2xl mx-auto transition hover:shadow-2xl"
+    >
+      <input
+        id="url-input"
+        type="url"
+        placeholder="Paste your long URL here..."
+        class="flex-grow p-3 border border-gray-200 rounded-xl md:rounded-r-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button
+        id="shorten-btn"
+        onclick="shortenURL()"
+        class="mt-3 md:mt-0 md:ml-2 w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition flex justify-center items-center gap-2"
+      >
+        <span id="btn-text">Shorten URL</span>
+        <!-- Loader -->
+        <svg
+          id="btn-loader"
+          class="animate-spin h-5 w-5 text-white hidden"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          ></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Result Section -->
+    <div
+      id="short-result"
+      class="mt-6 hidden opacity-0 transition-opacity duration-700"
+    >
+      <p class="text-gray-700 text-sm mb-2">Your shortened link:</p>
+      <div
+        class="flex items-center justify-center gap-2 bg-gray-100 px-4 py-2 rounded-lg max-w-md mx-auto"
+      >
+        <a
+          id="short-link"
+          href="#"
+          class="text-blue-600 font-medium underline"
+          target="_blank"
+        ></a>
+        <button
+          onclick="copyLink()"
+          class="text-sm text-gray-600 hover:text-blue-600 flex items-center gap-1"
+        >
+          📋 <span id="copy-text">Copy</span>
+        </button>
       </div>
-      <div class="p-6 rounded-lg shadow-sm text-center">
-        <h4 class="font-semibold mb-2">Secure</h4>
-        <p class="text-sm text-gray-600">Privacy-first link handling and expiration.</p>
+    </div>
+  </div>
+
+  <!-- Decorative gradient blob -->
+  <div
+    class="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30 -z-10"
+  ></div>
+  <div
+    class="absolute bottom-0 right-0 w-72 h-72 bg-purple-200 rounded-full blur-3xl opacity-30 -z-10"
+  ></div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="py-20 bg-gray-50 text-center">
+  <div class="container mx-auto px-6">
+    <h2 class="text-3xl md:text-4xl font-bold mb-8 text-gray-900">
+      Why Choose Shortly?
+    </h2>
+
+    <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+      <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
+        <div class="text-blue-600 text-4xl mb-3">⚡</div>
+        <h4 class="font-semibold text-lg mb-2">Blazing Fast</h4>
+        <p class="text-gray-600">
+          Powered by FastAPI & Redis for instant URL shortening.
+        </p>
       </div>
-      <div class="p-6 rounded-lg shadow-sm text-center">
-        <h4 class="font-semibold mb-2">Analytics Ready</h4>
-        <p class="text-sm text-gray-600">Easy to extend with click tracking & dashboards.</p>
+
+      <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
+        <div class="text-purple-600 text-4xl mb-3">📊</div>
+        <h4 class="font-semibold text-lg mb-2">Track Analytics</h4>
+        <p class="text-gray-600">
+          Get real-time insights into your link clicks and usage patterns.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
+        <div class="text-indigo-600 text-4xl mb-3">🔗</div>
+        <h4 class="font-semibold text-lg mb-2">Custom Short Links</h4>
+        <p class="text-gray-600">
+          Brand your links with custom aliases and domain options.
+        </p>
       </div>
     </div>
   </div>
 </section>
+
+<!-- CTA SECTION -->
+<section
+  class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center"
+>
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl font-bold mb-4">Start Shortening Smarter Today</h2>
+    <p class="text-lg text-blue-100 mb-8">
+      Join thousands of users simplifying their links with Shortly.
+    </p>
+    <a
+      href="/signup"
+      class="bg-white text-blue-700 font-semibold px-8 py-3 rounded-xl hover:bg-gray-100 transition"
+    >
+      Get Started for Free
+    </a>
+  </div>
+</section>
+
+<script>
+async function shortenURL() {
+  const urlInput = document.getElementById("url-input");
+  const shortResult = document.getElementById("short-result");
+  const shortLink = document.getElementById("short-link");
+  const btn = document.getElementById("shorten-btn");
+  const btnText = document.getElementById("btn-text");
+  const btnLoader = document.getElementById("btn-loader");
+
+  const longUrl = urlInput.value.trim();
+  if (!longUrl) {
+    alert("Please enter a valid URL!");
+    return;
+  }
+
+  // Disable button and show loader
+  btn.disabled = true;
+  btnText.textContent = "Shortening...";
+  btnLoader.classList.remove("hidden");
+
+  try {
+    const response = await fetch("/shorten", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: longUrl }),
+    });
+
+    const data = await response.json();
+
+    if (data.short_url) {
+      shortLink.href = data.short_url;
+      shortLink.textContent = data.short_url;
+      shortResult.classList.remove("hidden");
+      setTimeout(() => (shortResult.style.opacity = "1"), 50);
+    } else {
+      alert("Error: " + (data.detail || "Could not shorten URL."));
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong. Please try again.");
+  } finally {
+    // Reset button state
+    btn.disabled = false;
+    btnText.textContent = "Shorten URL";
+    btnLoader.classList.add("hidden");
+  }
+}
+
+function copyLink() {
+  const shortLink = document.getElementById("short-link").textContent;
+  const copyText = document.getElementById("copy-text");
+  navigator.clipboard.writeText(shortLink);
+  copyText.textContent = "Copied!";
+  setTimeout(() => (copyText.textContent = "Copy"), 1500);
+}
+</script>
 {% endblock %}
