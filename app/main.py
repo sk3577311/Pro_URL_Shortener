@@ -12,6 +12,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 # Upstash Redis client
 from app.redis_client import redis_client
+#auth router
+from app.auth import router as auth_router
 
 
 # ----------------------------
@@ -28,6 +30,7 @@ app.mount(
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
     name="static",
 )
+app.include_router(auth_router)
 
 # ----------------------------
 # Alias validation
