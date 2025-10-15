@@ -114,7 +114,7 @@ async def shorten_url(
 ):
     client_id = get_client_id(request)
     try:
-        check_rate_limit(client_id, limit=10, period_seconds=60)
+        check_rate_limit(client_id, limit=5, period_seconds=60)
     except HTTPException as e:
         return templates.TemplateResponse(
             "index.html",
