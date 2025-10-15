@@ -1,79 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Shortly - URL Shortener{% endblock %}
 {% block content %}
-<section class="hero-section d-flex align-items-center text-center text-white">
-  <div class="container">
-    <h1 class="display-5 fw-bold mb-4 animate-slide-up">Shorten, Share & Track Your Links</h1>
-    <p class="lead mb-5 animate-fade-in">Create short links that make your URLs simple and shareable.</p>
 
-    <div class="shorten-box mx-auto p-4 shadow-lg">
-      <form action="/shorten" method="post" id="url-form">
-        <div class="input-group mb-3">
-          <span class="input-group-text"><i class="bi bi-globe"></i></span>
-          <input type="url" class="form-control" name="original_url" placeholder="Enter a long URL..." required>
-        </div>
+<section class="bg-gradient-to-r from-primary to-secondary text-white py-28 text-center">
+  <div class="container mx-auto px-6">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4">
+      Create links that perform with our powerful URL Shortener
+    </h1>
+    <p class="text-lg text-gray-100 mb-8">
+      Spark instant connections with your audience using trustworthy, trackable links.
+    </p>
 
-        <div class="input-group mb-3">
-          <span class="input-group-text"><i class="bi bi-tag"></i></span>
-          <input type="text" class="form-control" name="custom_alias" placeholder="Custom alias (optional)">
-        </div>
+    <form id="url-shortener-form" class="max-w-3xl mx-auto bg-white rounded-xl p-5 flex flex-col md:flex-row gap-3 shadow-lg">
+      <input type="text" name="original_url" placeholder="Paste your long URL here..."
+        class="flex-grow px-4 py-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-primary" required>
+      <input type="text" name="custom_alias" placeholder="Custom alias (optional)"
+        class="px-4 py-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-primary">
+      <select name="ttl" class="border border-gray-300 rounded-lg px-3 py-3 text-gray-800 focus:ring-2 focus:ring-primary">
+        <option disabled selected>Link validity</option>
+        <option value="86400">1 day</option>
+        <option value="604800">7 days</option>
+        <option value="2592000">30 days</option>
+        <option value="0">Unlimited</option>
+      </select>
+      <button type="submit"
+        class="bg-primary hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md">
+        Shorten Link
+      </button>
+    </form>
 
-        <div class="input-group mb-3">
-          <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
-          <select name="ttl" class="form-select" required>
-            <option disabled selected>Select URL validity</option>
-            <option value="86400">1 day</option>
-            <option value="259200">3 days</option>
-            <option value="604800">7 days</option>
-            <option value="2592000">30 days</option>
-            <option value="0">Unlimited</option>
-          </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-magic"></i> Shorten URL</button>
-      </form>
-
-      {% if short_url %}
-      <div class="alert alert-success text-center mt-4">
-        <p><strong>Short URL:</strong></p>
-        <div class="input-group">
-          <input type="text" class="form-control" id="short-url" value="{{ short_url }}" readonly>
-          <button class="btn btn-secondary" onclick="copyToClipboard()"><i class="bi bi-clipboard"></i></button>
-        </div>
-        <small class="text-muted">Valid for {{ readable_ttl }}</small>
+    {% if short_url %}
+    <div class="mt-6">
+      <p class="text-sm">Your shortened URL:</p>
+      <div class="flex justify-center mt-2">
+        <input id="short-url" class="px-4 py-2 rounded-l-md border border-gray-300 w-72 text-gray-800" value="{{ short_url }}" readonly>
+        <button onclick="copyToClipboard()" class="bg-blue-600 text-white px-4 rounded-r-md">Copy</button>
       </div>
-      {% elif error %}
-      <div class="alert alert-danger mt-4 text-center">{{ error }}</div>
-      {% endif %}
     </div>
+    {% endif %}
   </div>
 </section>
 
-<section class="features-section py-5">
-  <div class="container">
-    <div class="row text-center">
-      <div class="col-md-4 mb-4">
-        <div class="feature-card p-4 shadow-sm">
-          <i class="bi bi-speedometer2 display-5 text-primary mb-3"></i>
-          <h5>Fast & Reliable</h5>
-          <p>Instantly shorten URLs with robust backend performance.</p>
-        </div>
-      </div>
-      <div class="col-md-4 mb-4">
-        <div class="feature-card p-4 shadow-sm">
-          <i class="bi bi-shield-check display-5 text-success mb-3"></i>
-          <h5>Secure</h5>
-          <p>All links are stored safely with expiry and ownership rules.</p>
-        </div>
-      </div>
-      <div class="col-md-4 mb-4">
-        <div class="feature-card p-4 shadow-sm">
-          <i class="bi bi-graph-up-arrow display-5 text-info mb-3"></i>
-          <h5>Trackable</h5>
-          <p>Track total clicks and metadata for each shortened link.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 {% endblock %}
