@@ -1,5 +1,6 @@
 # app/auth.py
 import os
+import secrets
 from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from starlette.responses import RedirectResponse
