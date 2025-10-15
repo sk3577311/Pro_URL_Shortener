@@ -23,7 +23,10 @@ router = APIRouter()
 @router.get("/auth/{provider}")
 async def oauth_login(request: Request, provider: str):
     redirect_uri = request.url_for("auth_callback", provider=provider)
-    return await oauth.create_client(provider).authorize_redirect(request, redirect_uri)
+    import sys
+    print("🔁 Redirect URI being sent:", redirect_uri, file=sys.stdout, flush=True)
+    client = oauth.create_client(provider)
+    return await client.authorize_redirect(request, redirect_uri)
 
 @router.get("/auth/{provider}/callback", name="auth_callback")
 async def auth_callback(request: Request, provider: str):
