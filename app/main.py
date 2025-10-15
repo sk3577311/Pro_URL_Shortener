@@ -155,7 +155,10 @@ async def shorten_url(
         f"meta:{short_code}",
         {"created_at": created_at, "owner": client_id, "ttl": ttl}
     )
-    redis_client.expire(f"meta:{short_code}", ttl)
+    if ttl and ttl > 0:
+        redis_client.expire(f"meta:{short_code}", ttl)
+    else:
+        redis_client.persist(f"meta:{short_code}")
 
     # Click counter
     if ttl and ttl > 0:
