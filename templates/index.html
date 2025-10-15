@@ -82,10 +82,12 @@
     </form>
 
     <!-- Result Section (optional for later AJAX or redirect) -->
+     {% if short_url %}
     <div
       id="short-result"
       class="mt-6 hidden opacity-0 transition-opacity duration-700"
     >
+
       <p class="text-gray-700 text-sm mb-2">Your shortened link:</p>
       <div
         class="flex items-center justify-center gap-2 bg-gray-100 px-4 py-2 rounded-lg max-w-md mx-auto"
@@ -105,6 +107,7 @@
         </button>
       </div>
     </div>
+    {% endif %}
   </div>
 
   <!-- Decorative blobs -->
