@@ -63,12 +63,6 @@ async def auth_callback(request: Request, provider: str):
                 # fallback: fetch from userinfo endpoint
                 resp = await client.get("https://openidconnect.googleapis.com/v1/userinfo", token=token)
                 userinfo = resp.json()
-
-    # ---- GITHUB ----
-    elif provider == "github":
-        resp = await client.get("user", token=token)
-        userinfo = resp.json()
-
     print("👤 User info received:", userinfo, file=sys.stdout, flush=True)
 
     # Session management
@@ -76,6 +70,6 @@ async def auth_callback(request: Request, provider: str):
     session_id = f"session:{secrets.token_urlsafe(16)}"
     redis_client.set(session_id, user_email, ex=7 * 24 * 3600)
 
-    response = RedirectResponse(url="/dashboard")
+    response = RedirectResponse(url="/")
     response.set_cookie("sessionid", session_id, httponly=True, samesite="lax")
     return response
