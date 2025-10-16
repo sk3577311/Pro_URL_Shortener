@@ -6,16 +6,16 @@
   <!-- Left side: Form -->
   <div class="w-full md:w-1/2 flex items-center justify-center bg-white px-10 md:px-20">
     <div class="w-full max-w-md">
-      <h2 class="text-3xl font-semibold mb-2">Sign in to Shortify</h2>
+      <h2 class="text-3xl font-semibold mb-2">Create your account</h2>
       <p class="text-gray-500 mb-6">
-        New here?
-        <a href="/signup" class="text-blue-600 hover:underline">Create an account</a>
+        Already have an account?
+        <a href="/login" class="text-blue-600 hover:underline">Log in</a>
       </p>
-
-      <button class="w-full border border-gray-300 rounded-md py-2 flex items-center justify-center mb-4 hover:bg-gray-50">
-        <img src="/static/google-icon.svg" class="w-5 h-5 mr-2" alt="Google" />
-        Continue with Google
-      </button>
+      <a href="/auth/google"
+        class="flex items-center justify-center w-full gap-3 border border-gray-300 rounded-lg py-3 hover:bg-gray-50 transition">
+        <img src="{{ url_for('static', path='icons/google.svg') }}" class="h-5 w-5" alt="">
+        <span class="text-sm font-medium text-gray-700">Continue with Google</span>
+      </a>
 
       <div class="relative mb-4">
         <div class="absolute inset-0 flex items-center">
@@ -33,8 +33,7 @@
         <input type="password" name="password" placeholder="Password" required
           class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
-        <button type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
           Sign in
         </button>
       </form>
@@ -46,7 +45,8 @@
     <div class="text-center">
       <img src="/static/login-illustration.svg" alt="Illustration" class="w-80 mx-auto mb-6">
       <p class="text-gray-600 font-medium max-w-sm mx-auto">
-        Manage, track, and analyze your shortened links — all in one place with <span class="text-blue-600 font-semibold">Shortify</span>.
+        Manage, track, and analyze your shortened links — all in one place with <span
+          class="text-blue-600 font-semibold">Shortify</span>.
       </p>
     </div>
   </div>
