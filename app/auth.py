@@ -49,44 +49,35 @@ async def oauth_login(request: Request, provider: str):
 # ----------------------------- #
 @router.get("/auth/{provider}/callback", name="auth_callback")
 async def auth_callback(request: Request, provider: str):
-    """Handle OAuth callback and create session."""
     client = oauth.create_client(provider)
     token = await client.authorize_access_token(request)
-    print("🔑 OAuth token response:", token, file=sys.stdout, flush=True)
 
-    userinfo = None
-
-    # ---- GOOGLE ----
     if provider == "google":
-        userinfo = token.get("userinfo")
-        if not userinfo:
-            try:
-                userinfo = await client.parse_id_token(request, token)
-            except Exception as e:
-                print("⚠️ Failed to parse id_token:", e, file=sys.stdout, flush=True)
-                resp = await client.get("https://openidconnect.googleapis.com/v1/userinfo", token=token)
-                userinfo = resp.json()
+        userinfo = await client.parse_id_token(request, token)
+        # Extract fields
+        user_email = userinfo.get("email")
+        user_name = userinfo.get("name")
+        user_picture = userinfo.get("picture")
+    else:
+        userinfo = await client.get("user", token=token)
+        userinfo = userinfo.json()
+        user_email = userinfo.get("login")
+        user_name = userinfo.get("name") or user_email
+        user_picture = userinfo.get("avatar_url")
 
-    print("👤 User info received:", userinfo, file=sys.stdout, flush=True)
-
-    if not userinfo or "email" not in userinfo:
-        return JSONResponse({"error": "Failed to retrieve user information"}, status_code=400)
-
-    # ----------------------------- #
-    # 🧠 Create session and store user
-    # ----------------------------- #
-    user_email = userinfo.get("email")
-    avatar = userinfo.get("picture")
-
+    # Store everything in Redis (or your session)
     session_id = f"session:{secrets.token_urlsafe(16)}"
-    redis_client.set(session_id, user_email, ex=7 * 24 * 3600)
-    if avatar:
-        redis_client.set(f"{session_id}:avatar", avatar, ex=7 * 24 * 3600)
+    redis_client.hset(session_id, mapping={
+        "email": user_email,
+        "name": user_name,
+        "picture": user_picture,
+    })
+    redis_client.expire(session_id, 7 * 24 * 3600)
 
-    # Redirect to homepage after successful login
     response = RedirectResponse(url="/")
     response.set_cookie("sessionid", session_id, httponly=True, samesite="lax")
     return response
+
 
 
 # ----------------------------- #

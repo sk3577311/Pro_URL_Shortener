@@ -37,13 +37,13 @@
         <a href="/pricing" class="hover:text-blue-600 transition">Pricing</a>
         <a href="/about" class="hover:text-blue-600 transition">About</a>
 
-        {% if logged_in_user %}
+        {% if user %}
         <!-- Logged-in user menu -->
         <div class="relative group">
           <button class="flex items-center gap-2 focus:outline-none">
-            <img src="{{ logged_in_user.avatar or url_for('static', path='img/user.png') }}"
+            <img src="{{ user.picture }}"
                  alt="User Avatar" class="w-9 h-9 rounded-full border">
-            <span class="font-medium text-gray-800">{{ logged_in_user.email.split('@')[0] }}</span>
+            <span class="font-medium text-gray-800">{{ user.name}}</span>
           </button>
 
           <!-- Dropdown -->
