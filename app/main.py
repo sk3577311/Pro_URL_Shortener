@@ -1,60 +1,51 @@
-# app/main.py
 import os
 import re
 import string, secrets
 from datetime import datetime
 from typing import Optional
 from pathlib import Path
-# fastapi imports
+
 from fastapi import FastAPI, HTTPException, Request, Form
-from fastapi.responses import RedirectResponse, HTMLResponse,JSONResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-# Upstash Redis client
+
 from app.redis_client import redis_client
-#auth router
 from app.auth import router as auth_router
 
-
 # ----------------------------
-# Template setup
-# ----------------------------
-templates = Jinja2Templates(directory="templates")
-
-# ----------------------------
-# Alias validation
+# App setup
 # ----------------------------
 app = FastAPI(title="URL Shortener (FastAPI + Upstash Redis)")
+templates = Jinja2Templates(directory="templates")
+
+# Static files
 app.mount(
     "/static",
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
     name="static",
 )
-# 🔒 Add session middleware for OAuth
+
+# Session middleware (for cookies)
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SESSION_SECRET", "supersecretkey"),  # use a real secret in production
+    secret_key=os.getenv("SESSION_SECRET", "supersecretkey"),
     same_site="lax",
-    https_only=False  # set True if using HTTPS
+    https_only=False  # Set True in production
 )
 
-# auth router
+# Include OAuth routes
 app.include_router(auth_router)
 
-
-
 # ----------------------------
-# Alias validation
+# Helpers
 # ----------------------------
 ALIAS_RE = re.compile(r"^[A-Za-z0-9_-]{3,100}$")
 
 def valid_alias(alias: str) -> bool:
     return bool(ALIAS_RE.fullmatch(alias))
 
-# ----------------------------
-# Helper: Client ID for rate limiting
-# ----------------------------
 def get_client_id(request: Request) -> str:
     xff = request.headers.get("x-forwarded-for")
     if xff:
@@ -63,27 +54,17 @@ def get_client_id(request: Request) -> str:
         return request.client.host
     return "anonymous"
 
-# ----------------------------
-# TTL conversion
-# ----------------------------
 def format_ttl(ttl: int) -> str:
     if ttl == 0:
         return "as long as you want"
     days = ttl // 86400
     return f"{days} day{'s' if days != 1 else ''}"
 
-
-# ----------------------------
-# Rate limiter (10 req/min)
-# ----------------------------
 def check_rate_limit(client_id: str, limit: int = 5, period_seconds: int = 60):
     key = f"rate:{client_id}"
-    # Increment request count
     count = redis_client.incr(key)
-    # Set expiry window if new
     if count == 1:
         redis_client.expire(key, period_seconds)
-    # Check limit
     if count > limit:
         raise HTTPException(
             status_code=429,
@@ -91,48 +72,75 @@ def check_rate_limit(client_id: str, limit: int = 5, period_seconds: int = 60):
         )
 
 # ----------------------------
-# Homepage and other pages
+# Helper: get logged-in user
+# ----------------------------
+async def get_logged_in_user(request: Request):
+    session_id = request.cookies.get("sessionid")
+    if not session_id:
+        return None
+    email = await redis_client.get(session_id)
+    if not email:
+        return None
+    return {"email": email, "avatar": None}
+
+# ----------------------------
+# Pages
 # ----------------------------
 @app.get("/", response_class=HTMLResponse)
-def home(request: Request):
+async def home(request: Request):
+    user = await get_logged_in_user(request)
     return templates.TemplateResponse(
-        "index.html", {"request": request, "short_url": None, "error": None})
+        "index.html",
+        {"request": request, "short_url": None, "error": None, "logged_in_user": user},
+    )
 
-@app.get('/pricing')
-def pricing(request:Request):
-    return templates.TemplateResponse("pricing.html",{"request": request, "short_url": None, "error": None})
+@app.get("/pricing")
+async def pricing(request: Request):
+    user = await get_logged_in_user(request)
+    return templates.TemplateResponse("pricing.html", {"request": request, "logged_in_user": user})
 
-@app.get('/about')
-def about(request:Request):
-    return templates.TemplateResponse("about.html",{"request": request, "short_url": None, "error": None})
+@app.get("/about")
+async def about(request: Request):
+    user = await get_logged_in_user(request)
+    return templates.TemplateResponse("about.html", {"request": request, "logged_in_user": user})
 
-@app.get('/login')
-def pricing(request:Request):
-    return templates.TemplateResponse("login.html",{"request": request, "short_url": None, "error": None})
+@app.get("/login")
+async def login_page(request: Request):
+    user = await get_logged_in_user(request)
+    if user:
+        return RedirectResponse(url="/")  # Already logged in
+    return templates.TemplateResponse("login.html", {"request": request})
 
-@app.get('/signup')
-def about(request:Request):
-    return templates.TemplateResponse("signup.html",{"request": request, "short_url": None, "error": None})
+@app.get("/signup")
+async def signup_page(request: Request):
+    user = await get_logged_in_user(request)
+    if user:
+        return RedirectResponse(url="/")
+    return templates.TemplateResponse("signup.html", {"request": request})
 
 # ----------------------------
-# POST /shorten
+# POST /shorten — requires login
 # ----------------------------
 @app.post("/shorten", response_class=HTMLResponse)
 async def shorten_url(
     request: Request,
     original_url: str = Form(...),
     custom_alias: Optional[str] = Form(None),
-    ttl: int = Form(...)
+    ttl: int = Form(...),
 ):
+    # 🔒 Require login
+    user = await get_logged_in_user(request)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+
     client_id = get_client_id(request)
     try:
         check_rate_limit(client_id, limit=5, period_seconds=60)
     except HTTPException as e:
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "short_url": None, "error": e.detail}
+            {"request": request, "short_url": None, "error": e.detail, "logged_in_user": user},
         )
-    # check_rate_limit(client_id, limit=5, period_seconds=60)
 
     # Normalize URL
     if not original_url.startswith(("http://", "https://")):
@@ -140,61 +148,53 @@ async def shorten_url(
     long_url = original_url.strip()
     created_at = datetime.utcnow().isoformat()
 
-    # Custom alias handling
+    # Handle alias or random code
     if custom_alias:
         custom_alias = custom_alias.strip()
         if not valid_alias(custom_alias):
             return templates.TemplateResponse(
                 "index.html",
-                {"request": request, "short_url": None, "error": "Invalid alias (A-Z, a-z, 0-9, _ or - only)."}
+                {"request": request, "short_url": None, "error": "Invalid alias (A-Z, a-z, 0-9, _ or - only).", "logged_in_user": user},
             )
         ok = redis_client.set(f"url:{custom_alias}", long_url, nx=True, ex=ttl)
         if not ok:
             return templates.TemplateResponse(
                 "index.html",
-                {"request": request, "short_url": None, "error": "Alias already in use."}
+                {"request": request, "short_url": None, "error": "Alias already in use.", "logged_in_user": user},
             )
         short_code = custom_alias
     else:
-        # Generate random code
         alphabet = string.ascii_letters + string.digits
         while True:
             short_code = ''.join(secrets.choice(alphabet) for _ in range(6))
             if not redis_client.exists(f"url:{short_code}"):
                 break
         if ttl and ttl > 0:
-            redis_client.set(f"url:{short_code}", original_url, ex=ttl)
+            redis_client.set(f"url:{short_code}", long_url, ex=ttl)
         else:
-            redis_client.set(f"url:{short_code}", original_url)
-        # redis_client.set(f"url:{short_code}", long_url, ex=ttl)
+            redis_client.set(f"url:{short_code}", long_url)
 
-    # Metadata
+    # Store metadata
     redis_client.hmset(
         f"meta:{short_code}",
-        {"created_at": created_at, "owner": client_id, "ttl": ttl}
+        {"created_at": created_at, "owner": user["email"], "ttl": ttl}
     )
     if ttl and ttl > 0:
         redis_client.expire(f"meta:{short_code}", ttl)
-    else:
-        redis_client.persist(f"meta:{short_code}")
 
     # Click counter
-    if ttl and ttl > 0:
-        redis_client.set(f"clicks:{short_code}", original_url, ex=ttl)
-    else:
-        redis_client.set(f"clicks:{short_code}", original_url)
-    # redis_client.set(f"clicks:{short_code}", 0, ex=ttl)
+    redis_client.set(f"clicks:{short_code}", 0)
 
     readable_ttl = format_ttl(ttl)
     short_url = str(request.base_url).rstrip("/") + "/" + short_code
 
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "short_url": short_url, "error": None, "readable_ttl": readable_ttl}
+        {"request": request, "short_url": short_url, "error": None, "readable_ttl": readable_ttl, "logged_in_user": user},
     )
 
 # ----------------------------
-# Redirect short code
+# Redirect short URL
 # ----------------------------
 @app.get("/{short_code}")
 async def redirect_short(short_code: str):
@@ -214,16 +214,17 @@ async def stats(short_code: str):
         raise HTTPException(status_code=404, detail="Short code not found.")
     clicks = redis_client.get(f"clicks:{short_code}") or 0
     meta = redis_client.hgetall(f"meta:{short_code}")
-    return {
-        "short_code": short_code,
-        "long_url": long_url,
-        "clicks": int(clicks),
-        "meta": meta
-    }
+    return {"short_code": short_code, "long_url": long_url, "clicks": int(clicks), "meta": meta}
 
+# ----------------------------
 # Analytics page
+# ----------------------------
 @app.get("/analytics/{code}", response_class=HTMLResponse)
-def analytics_page(request: Request, code: str):
+async def analytics_page(request: Request, code: str):
     meta = redis_client.hgetall(f"meta:{code}") or {}
     clicks = redis_client.get(f"clicks:{code}") or 0
-    return templates.TemplateResponse("analytics.html", {"request": request, "code": code, "meta": meta, "clicks": int(clicks)})
+    user = await get_logged_in_user(request)
+    return templates.TemplateResponse(
+        "analytics.html",
+        {"request": request, "code": code, "meta": meta, "clicks": int(clicks), "logged_in_user": user},
+    )
