@@ -30,52 +30,56 @@
           <span class="text-xl font-bold text-blue-600">Shortify</span>
         </a>
 
-        <!-- Right: Hamburger button (mobile only) -->
-        <button id="menu-toggle"
-          class="text-gray-700 hover:text-blue-600 focus:outline-none md:hidden flex items-center justify-center">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m0 6H4"></path>
-          </svg>
-        </button>
-
-        <!-- Desktop Menu -->
-        <div id="menu" class="hidden md:flex space-x-6 items-center">
-          <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
-          <a href="/about" class="text-gray-700 hover:text-blue-600">About</a>
-          <a href="/pricing" class="text-gray-700 hover:text-blue-600">Pricing</a>
+        <!-- Right side -->
+        <div class="flex items-center space-x-4">
 
           {% if user %}
-          <div class="flex items-center space-x-3">
-            <img src="{{ user.avatar }}" alt="Avatar" class="w-8 h-8 rounded-full">
-            <form action="/auth/logout" method="post">
-              <button type="submit"
-                class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">Logout</button>
-            </form>
+          <!-- Logged-in user avatar (Desktop + Mobile) -->
+          <div class="relative">
+            <button id="avatar-btn"
+              class="flex items-center focus:outline-none hover:opacity-90 transition rounded-full">
+              <img src="{{ user.avatar }}" alt="Avatar" class="w-9 h-9 rounded-full border border-gray-300">
+            </button>
+
+            <!-- Dropdown -->
+            <div id="avatar-dropdown"
+              class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg py-2">
+              <form action="/auth/logout" method="post">
+                <button type="submit" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+              </form>
+            </div>
           </div>
+
           {% else %}
-          <a href="/login" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Login</a>
+          <!-- Hamburger Menu (only when not logged in, mobile only) -->
+          <button id="menu-toggle"
+            class="text-gray-700 hover:text-blue-600 focus:outline-none md:hidden flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m0 6H4"></path>
+            </svg>
+          </button>
+
+          <!-- Desktop Menu (only for logged-out users) -->
+          <div id="menu" class="hidden md:flex space-x-6 items-center">
+            <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
+            <a href="/about" class="text-gray-700 hover:text-blue-600">About</a>
+            <a href="/pricing" class="text-gray-700 hover:text-blue-600">Pricing</a>
+            <a href="/login" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Login</a>
+          </div>
           {% endif %}
         </div>
       </div>
 
-      <!-- Mobile Dropdown Menu -->
+      <!-- Mobile Menu (for logged-out users) -->
+      {% if not user %}
       <div id="mobile-menu" class="hidden flex-col space-y-3 py-3 md:hidden border-t border-gray-200">
         <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
         <a href="/about" class="text-gray-700 hover:text-blue-600">About</a>
         <a href="/pricing" class="text-gray-700 hover:text-blue-600">Pricing</a>
-
-        {% if user %}
-        <div class="flex items-center space-x-3">
-          <img src="{{ user.avatar }}" alt="Avatar" class="w-8 h-8 rounded-full">
-          <form action="/auth/logout" method="post">
-            <button type="submit"
-              class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">Logout</button>
-          </form>
-        </div>
-        {% else %}
-        <a href="/login" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Login</a>
-        {% endif %}
+        <a href="/login"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-max">Login</a>
       </div>
+      {% endif %}
     </div>
   </nav>
 
@@ -91,13 +95,30 @@
     </div>
   </footer>
   <script>
-    // Mobile toggle functionality
+    // Toggle mobile menu (only when logged out)
     const toggle = document.getElementById("menu-toggle");
     const mobileMenu = document.getElementById("mobile-menu");
+    if (toggle && mobileMenu) {
+      toggle.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+    }
 
-    toggle.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
-    });
+    // Toggle avatar dropdown (for logged-in users)
+    const avatarBtn = document.getElementById("avatar-btn");
+    const avatarDropdown = document.getElementById("avatar-dropdown");
+    if (avatarBtn && avatarDropdown) {
+      avatarBtn.addEventListener("click", () => {
+        avatarDropdown.classList.toggle("hidden");
+      });
+
+      // Close dropdown when clicking outside
+      window.addEventListener("click", (e) => {
+        if (!avatarBtn.contains(e.target) && !avatarDropdown.contains(e.target)) {
+          avatarDropdown.classList.add("hidden");
+        }
+      });
+    }
   </script>
   <script src="{{ url_for('static', path='js/index.js') }}"></script>
 </body>
