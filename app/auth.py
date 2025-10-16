@@ -52,33 +52,32 @@ async def auth_callback(request: Request, provider: str):
     client = oauth.create_client(provider)
     token = await client.authorize_access_token(request)
 
+    # Defensive: handle Google vs other providers
+    userinfo = None
     if provider == "google":
-        userinfo = await client.parse_id_token(request, token)
-        # Extract fields
-        user_email = userinfo.get("email")
-        user_name = userinfo.get("name")
-        user_picture = userinfo.get("picture")
+        # Try OpenID ID token first
+        if "id_token" in token:
+            userinfo = await client.parse_id_token(request, token)
+        else:
+            # Fallback: use userinfo endpoint (some Google responses skip id_token)
+            resp = await client.get("https://openidconnect.googleapis.com/v1/userinfo", token=token)
+            userinfo = resp.json()
     else:
-        userinfo = await client.get("user", token=token)
-        userinfo = userinfo.json()
-        user_email = userinfo.get("login")
-        user_name = userinfo.get("name") or user_email
-        user_picture = userinfo.get("avatar_url")
+        # For GitHub or other OAuth
+        resp = await client.get("user", token=token)
+        userinfo = resp.json()
 
-    # Store everything in Redis (or your session)
+    # Store session in Redis
+    user_email = userinfo.get("email") or userinfo.get("login")
+    avatar_url = userinfo.get("picture") or userinfo.get("avatar_url")
+
     session_id = f"session:{secrets.token_urlsafe(16)}"
-    redis_client.hset(session_id, mapping={
-        "email": user_email,
-        "name": user_name,
-        "picture": user_picture,
-    })
-    redis_client.expire(session_id, 7 * 24 * 3600)
+    redis_client.set(session_id, user_email, ex=7 * 24 * 3600)
+    redis_client.set(f"{session_id}:avatar", avatar_url, ex=7 * 24 * 3600)
 
-    response = RedirectResponse(url="/")
+    response = RedirectResponse(url="/", status_code=303)
     response.set_cookie("sessionid", session_id, httponly=True, samesite="lax")
     return response
-
-
 
 # ----------------------------- #
 # 👤 3️⃣ USER SESSION CHECK

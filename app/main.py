@@ -6,7 +6,7 @@ from typing import Optional
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request, Form
-from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -20,19 +20,19 @@ from app.auth import router as auth_router
 app = FastAPI(title="URL Shortener (FastAPI + Upstash Redis)")
 templates = Jinja2Templates(directory="templates")
 
-# Static files
+# Serve static files
 app.mount(
     "/static",
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
     name="static",
 )
 
-# Session middleware (for cookies)
+# Session middleware for cookies
 app.add_middleware(
     SessionMiddleware,
     secret_key=os.getenv("SESSION_SECRET", "supersecretkey"),
     same_site="lax",
-    https_only=False  # Set True in production
+    https_only=False  # Set to True in production (with HTTPS)
 )
 
 # Include OAuth routes
@@ -72,16 +72,17 @@ def check_rate_limit(client_id: str, limit: int = 5, period_seconds: int = 60):
         )
 
 # ----------------------------
-# Helper: get logged-in user
+# Helper: Get logged-in user
 # ----------------------------
 async def get_logged_in_user(request: Request):
     session_id = request.cookies.get("sessionid")
     if not session_id:
         return None
     email = redis_client.get(session_id)
+    avatar = redis_client.get(f"{session_id}:avatar")
     if not email:
         return None
-    return {"email": email, "avatar": None}
+    return {"email": email, "avatar_url": avatar}
 
 # ----------------------------
 # Pages
@@ -89,37 +90,37 @@ async def get_logged_in_user(request: Request):
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     session_id = request.cookies.get("sessionid")
-    user = None
+    logged_in_user = None
     if session_id:
         email = redis_client.get(session_id)
         avatar = redis_client.get(f"{session_id}:avatar")
         if email:
-            user = {"email": email, "avatar_url": avatar}
+            logged_in_user = {"email": email, "avatar_url": avatar}
     return templates.TemplateResponse(
-        "index.html", {"request": request, "user": user, "short_url": None, "error": None}
+        "index.html", {"request": request, "logged_in_user": logged_in_user, "short_url": None, "error": None}
     )
 
 @app.get("/pricing")
 async def pricing(request: Request):
-    user = await get_logged_in_user(request)
-    return templates.TemplateResponse("pricing.html", {"request": request, "logged_in_user": user})
+    logged_in_user = await get_logged_in_user(request)
+    return templates.TemplateResponse("pricing.html", {"request": request, "logged_in_user": logged_in_user})
 
 @app.get("/about")
 async def about(request: Request):
-    user = await get_logged_in_user(request)
-    return templates.TemplateResponse("about.html", {"request": request, "logged_in_user": user})
+    logged_in_user = await get_logged_in_user(request)
+    return templates.TemplateResponse("about.html", {"request": request, "logged_in_user": logged_in_user})
 
 @app.get("/login")
 async def login_page(request: Request):
-    user = await get_logged_in_user(request)
-    if user:
+    logged_in_user = await get_logged_in_user(request)
+    if logged_in_user:
         return RedirectResponse(url="/")  # Already logged in
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/signup")
 async def signup_page(request: Request):
-    user = await get_logged_in_user(request)
-    if user:
+    logged_in_user = await get_logged_in_user(request)
+    if logged_in_user:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("signup.html", {"request": request})
 
@@ -135,16 +136,23 @@ async def shorten_url(
 ):
     # 🔒 Require login
     session_id = request.cookies.get("sessionid")
-    if not session_id or not redis_client.get(session_id):
+    if not session_id:
         return RedirectResponse(url="/login", status_code=303)
 
+    email = redis_client.get(session_id)
+    avatar = redis_client.get(f"{session_id}:avatar")
+    if not email:
+        return RedirectResponse(url="/login", status_code=303)
+
+    logged_in_user = {"email": email, "avatar_url": avatar}
     client_id = get_client_id(request)
+
     try:
         check_rate_limit(client_id, limit=5, period_seconds=60)
     except HTTPException as e:
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "short_url": None, "error": e.detail, "logged_in_user": user},
+            {"request": request, "short_url": None, "error": e.detail, "logged_in_user": logged_in_user},
         )
 
     # Normalize URL
@@ -159,13 +167,23 @@ async def shorten_url(
         if not valid_alias(custom_alias):
             return templates.TemplateResponse(
                 "index.html",
-                {"request": request, "short_url": None, "error": "Invalid alias (A-Z, a-z, 0-9, _ or - only).", "logged_in_user": user},
+                {
+                    "request": request,
+                    "short_url": None,
+                    "error": "Invalid alias (A-Z, a-z, 0-9, _ or - only).",
+                    "logged_in_user": logged_in_user,
+                },
             )
         ok = redis_client.set(f"url:{custom_alias}", long_url, nx=True, ex=ttl)
         if not ok:
             return templates.TemplateResponse(
                 "index.html",
-                {"request": request, "short_url": None, "error": "Alias already in use.", "logged_in_user": user},
+                {
+                    "request": request,
+                    "short_url": None,
+                    "error": "Alias already in use.",
+                    "logged_in_user": logged_in_user,
+                },
             )
         short_code = custom_alias
     else:
@@ -182,7 +200,7 @@ async def shorten_url(
     # Store metadata
     redis_client.hmset(
         f"meta:{short_code}",
-        {"created_at": created_at, "owner": user["email"], "ttl": ttl}
+        {"created_at": created_at, "owner": logged_in_user["email"], "ttl": ttl}
     )
     if ttl and ttl > 0:
         redis_client.expire(f"meta:{short_code}", ttl)
@@ -195,7 +213,13 @@ async def shorten_url(
 
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "short_url": short_url, "error": None, "readable_ttl": readable_ttl, "logged_in_user": user},
+        {
+            "request": request,
+            "short_url": short_url,
+            "error": None,
+            "readable_ttl": readable_ttl,
+            "logged_in_user": logged_in_user,
+        },
     )
 
 # ----------------------------
@@ -228,8 +252,8 @@ async def stats(short_code: str):
 async def analytics_page(request: Request, code: str):
     meta = redis_client.hgetall(f"meta:{code}") or {}
     clicks = redis_client.get(f"clicks:{code}") or 0
-    user = await get_logged_in_user(request)
+    logged_in_user = await get_logged_in_user(request)
     return templates.TemplateResponse(
         "analytics.html",
-        {"request": request, "code": code, "meta": meta, "clicks": int(clicks), "logged_in_user": user},
+        {"request": request, "code": code, "meta": meta, "clicks": int(clicks), "logged_in_user": logged_in_user},
     )
