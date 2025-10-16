@@ -110,3 +110,16 @@ async def get_logged_in_user(request: Request):
         "email": user_email,
         "avatar": avatar,
     })
+
+@router.post("/auth/logout")
+async def logout(request: Request):
+    """Log out the current user by deleting their session."""
+    session_id = request.cookies.get("sessionid")
+    response = RedirectResponse(url="/")
+
+    if session_id:
+        redis_client.delete(session_id)
+        redis_client.delete(f"{session_id}:avatar")
+        response.delete_cookie("sessionid")
+
+    return response
