@@ -1,55 +1,47 @@
 {% extends "base.html" %}
-{% block title %}Login — Shortify{% endblock %}
+{% block title %}Login | Shortify{% endblock %}
+
 {% block content %}
-
-<section class="h-screen overflow-hidden flex">
-  <!-- Left side: Form -->
-  <div class="w-full md:w-1/2 flex items-center justify-center bg-white px-10 md:px-20">
-    <div class="w-full max-w-md">
-      <h2 class="text-3xl font-semibold mb-2">Sign in to Shortify</h2>
-      <p class="text-gray-500 mb-6">
-        New here?
-        <a href="/signup" class="text-blue-600 hover:underline">Create your account</a>
-      </p>
-      <a href="/auth/google"
-        class="flex items-center justify-center w-full gap-3 border border-gray-300 rounded-lg py-3 hover:bg-gray-50 transition">
-        <img src="{{ url_for('static', path='icons/google.svg') }}" class="h-5 w-5" alt="">
-        <span class="text-sm font-medium text-gray-700">Continue with Google</span>
-      </a>
-
-      <div class="relative mb-4">
-        <div class="absolute inset-0 flex items-center">
-          <div class="w-full border-t border-gray-300"></div>
-        </div>
-        <div class="relative flex justify-center text-sm">
-          <span class="px-2 bg-white text-gray-500">OR</span>
-        </div>
-      </div>
-
-      <form method="post" class="space-y-4">
-        <input type="email" name="email" placeholder="Email" required
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-
-        <input type="password" name="password" placeholder="Password" required
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
-          Sign in
-        </button>
-      </form>
-    </div>
+<section class="flex flex-col-reverse md:flex-row items-center justify-center min-h-[80vh] px-6 py-12">
+  <!-- Left: Image -->
+  <div class="w-full md:w-1/2 flex justify-center mt-8 md:mt-0">
+    <img src="{{ url_for('static', path='./static/img/login-url-shortener.jpg') }}" 
+         alt="Login Illustration" 
+         class="w-64 sm:w-80 md:w-96 drop-shadow-lg" />
   </div>
 
-  <!-- Right side: Illustration -->
-  <div class="hidden md:flex w-1/2 bg-gray-50 items-center justify-center p-10">
-    <div class="text-center">
-      <img src="/static/img/login-url-shortener.jpg" alt="Illustration" class="w-100 mx-auto mb-6">
-      <p class="text-gray-600 font-medium max-w-sm mx-auto">
-        Manage, track, and analyze your shortened links — all in one place with <span
-          class="text-blue-600 font-semibold">Shortify</span>.
+  <!-- Right: Login Card -->
+  <div class="w-full md:w-1/2 flex flex-col items-center">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+      <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-center text-gray-800">Welcome Back 👋</h1>
+      <p class="text-gray-500 text-center mb-6">Login to manage your shortened URLs</p>
+
+      <div class="flex flex-col gap-4">
+        <!-- Google Login -->
+        <a href="/auth/google"
+           class="flex items-center justify-center gap-3 bg-white border border-gray-300 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+          <img src="{{ url_for('static', path='static/img/google.svg') }}" alt="Google" class="w-5 h-5">
+          <span>Continue with Google</span>
+        </a>
+
+        <!-- Optional Email Login -->
+        <form method="post" action="/auth/login" class="flex flex-col gap-4">
+          <input type="email" name="email" placeholder="Email address"
+                 class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+          <input type="password" name="password" placeholder="Password"
+                 class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+          <button type="submit"
+                  class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-2 rounded-lg hover:opacity-90 transition">
+            Log In
+          </button>
+        </form>
+      </div>
+
+      <p class="text-center text-gray-500 text-sm mt-6">
+        Don’t have an account?
+        <a href="/signup" class="text-blue-600 hover:underline">Sign up</a>
       </p>
     </div>
   </div>
 </section>
-
 {% endblock %}

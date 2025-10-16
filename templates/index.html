@@ -1,41 +1,42 @@
 {% extends "base.html" %}
 {% block title %}Shortify - Fast & Smart URL Shortener{% endblock %}
 {% block content %}
+
 <!-- HERO SECTION -->
-<section class="bg-gradient-to-b from-blue-50 to-white py-20 text-center relative">
-  <div class="container mx-auto px-6">
-    <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight animate-fade-in">
+<section class="bg-gradient-to-b from-blue-50 to-white py-16 md:py-20 text-center relative overflow-hidden">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight animate-fade-in">
       Shorten. Share. <span class="text-blue-600">Track.</span>
     </h1>
-    <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
+    <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-8 sm:mb-10">
       Transform long, messy URLs into clean, shareable links — powered by FastAPI & Redis.
     </p>
 
     <!-- URL SHORTENER FORM -->
     <form id="shorten-form" action="/shorten" method="POST"
-      class="bg-white shadow-xl rounded-2xl p-6 flex flex-wrap justify-center gap-3 md:max-w-6xl mx-auto transition hover:shadow-2xl"
+      class="bg-white shadow-lg rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 md:max-w-5xl mx-auto transition hover:shadow-2xl"
       onsubmit="showLoader()">
 
       <!-- URL Input -->
       <input id="url-input" name="original_url" type="url" placeholder="Paste your long URL here..." required
-        class="flex-grow w-full md:flex-[2_1_0%] p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        class="flex-grow w-full sm:flex-[2_1_0%] p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base" />
 
-      <!-- Custom Alias (optional) -->
+      <!-- Custom Alias -->
       <input id="alias" name="alias" type="text" placeholder="Custom alias (optional)"
-        class="w-full md:w-48 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        class="w-full sm:w-48 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base" />
 
-      <!-- TTL / Validity Dropdown -->
+      <!-- TTL -->
       <select id="ttl" name="ttl"
-        class="w-full md:w-40 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        class="w-full sm:w-40 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base">
         <option value="86400">1 Day</option>
         <option value="604800">1 Week</option>
         <option value="2592000">1 Month</option>
         <option value="0" selected>Forever</option>
       </select>
 
-      <!-- Submit Button with Loader -->
+      <!-- Submit Button -->
       <button type="submit" id="shorten-btn"
-        class="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition flex justify-center items-center gap-2">
+        class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition flex justify-center items-center gap-2">
         <span id="btn-text">Shorten URL</span>
         <svg id="btn-loader" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg"
           fill="none" viewBox="0 0 24 24">
@@ -45,25 +46,25 @@
       </button>
     </form>
 
-
     <!-- RESULT SECTION -->
     {% if short_url %}
-    <div id="short-result" class="mt-6 opacity-100 transition-opacity duration-700">
+    <div id="short-result" class="mt-6 opacity-100 transition-opacity duration-700 px-4">
       <p class="text-gray-700 text-sm mb-2">Your shortened link:</p>
       <span class="block text-gray-600 mb-2">This link will be valid for {{ readable_ttl }}.</span>
 
-      <div class="flex items-center justify-center gap-2 bg-gray-100 px-4 py-2 rounded-lg max-w-md mx-auto">
-        <a id="short-link" href="{{ short_url }}" class="text-blue-600 font-medium underline" target="_blank">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-2 bg-gray-100 px-4 py-2 rounded-lg max-w-md mx-auto">
+        <a id="short-link" href="{{ short_url }}" class="text-blue-600 font-medium underline break-all" target="_blank">
           {{ short_url }}
         </a>
         <button type="button" onclick="copyLink()"
-          class="text-sm text-gray-600 hover:text-blue-600 flex items-center gap-1">
+          class="text-sm text-gray-600 hover:text-blue-600 flex items-center gap-1 mt-2 sm:mt-0">
           📋 <span id="copy-text">Copy</span>
         </button>
       </div>
     </div>
     {% elif error %}
-    <div id="result" class="mt-4 text-red-700 bg-red-100 border border-red-300 rounded-lg px-4 py-3 max-w-md mx-auto"
+    <div id="result"
+      class="mt-4 text-red-700 bg-red-100 border border-red-300 rounded-lg px-4 py-3 max-w-md mx-auto text-sm sm:text-base"
       role="alert">
       <strong class="block mb-1">⚠️ Error:</strong> {{ error }}
     </div>
@@ -71,53 +72,46 @@
   </div>
 
   <!-- Decorative blobs -->
-  <div class="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30 -z-10"></div>
-  <div class="absolute bottom-0 right-0 w-72 h-72 bg-purple-200 rounded-full blur-3xl opacity-30 -z-10"></div>
+  <div class="absolute top-0 left-0 w-60 sm:w-72 h-60 sm:h-72 bg-blue-200 rounded-full blur-3xl opacity-30 -z-10"></div>
+  <div class="absolute bottom-0 right-0 w-60 sm:w-72 h-60 sm:h-72 bg-purple-200 rounded-full blur-3xl opacity-30 -z-10"></div>
 </section>
 
 <!-- FEATURES SECTION -->
-<section class="py-20 bg-gray-50 text-center">
-  <div class="container mx-auto px-6">
-    <h2 class="text-3xl md:text-4xl font-bold mb-8 text-gray-900">
-      Why Choose Shortify?
-    </h2>
+<section class="py-16 md:py-20 bg-gray-50 text-center">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl md:text-4xl font-bold mb-10 text-gray-900">Why Choose Shortify?</h2>
 
-    <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-10 max-w-6xl mx-auto">
       <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
         <div class="text-blue-600 text-4xl mb-3">⚡</div>
         <h4 class="font-semibold text-lg mb-2">Blazing Fast</h4>
-        <p class="text-gray-600">
-          Powered by FastAPI & Redis for instant URL shortening.
-        </p>
+        <p class="text-gray-600">Powered by FastAPI & Redis for instant URL shortening.</p>
       </div>
 
       <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
         <div class="text-purple-600 text-4xl mb-3">📊</div>
         <h4 class="font-semibold text-lg mb-2">Track Analytics</h4>
-        <p class="text-gray-600">
-          Get real-time insights into your link clicks and usage patterns.
-        </p>
+        <p class="text-gray-600">Get real-time insights into your link clicks and usage patterns.</p>
       </div>
 
       <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition">
         <div class="text-indigo-600 text-4xl mb-3">🔗</div>
         <h4 class="font-semibold text-lg mb-2">Custom Short Links</h4>
-        <p class="text-gray-600">
-          Brand your links with custom aliases and domain options.
-        </p>
+        <p class="text-gray-600">Brand your links with custom aliases and domain options.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CTA SECTION -->
-<section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center">
-  <div class="container mx-auto px-6">
-    <h2 class="text-4xl font-bold mb-4">Start Shortening Smarter Today</h2>
-    <p class="text-lg text-blue-100 mb-8">
+<section class="py-16 md:py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl sm:text-4xl font-bold mb-4">Start Shortening Smarter Today</h2>
+    <p class="text-base sm:text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
       Join thousands of users simplifying their links with Shortly.
     </p>
-    <a href="/signup" class="bg-white text-blue-700 font-semibold px-8 py-3 rounded-xl hover:bg-gray-100 transition">
+    <a href="/signup"
+      class="inline-block bg-white text-blue-700 font-semibold px-8 py-3 rounded-xl hover:bg-gray-100 transition">
       Get Started for Free
     </a>
   </div>
@@ -129,7 +123,6 @@
     const btn = document.getElementById("shorten-btn");
     const btnText = document.getElementById("btn-text");
     const btnLoader = document.getElementById("btn-loader");
-
     btn.disabled = true;
     btnText.textContent = "Shortening...";
     btnLoader.classList.remove("hidden");
@@ -143,4 +136,5 @@
     setTimeout(() => (copyText.textContent = "Copy"), 1500);
   }
 </script>
+
 {% endblock %}
