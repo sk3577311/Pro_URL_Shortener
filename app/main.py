@@ -87,11 +87,16 @@ async def get_logged_in_user(request: Request):
 # Pages
 # ----------------------------
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    user = await get_logged_in_user(request)
+def home(request: Request):
+    session_id = request.cookies.get("sessionid")
+    user = None
+    if session_id:
+        email = redis_client.get(session_id)
+        avatar = redis_client.get(f"{session_id}:avatar")
+        if email:
+            user = {"email": email, "avatar_url": avatar}
     return templates.TemplateResponse(
-        "index.html",
-        {"request": request, "short_url": None, "error": None, "logged_in_user": user},
+        "index.html", {"request": request, "user": user, "short_url": None, "error": None}
     )
 
 @app.get("/pricing")
@@ -129,9 +134,9 @@ async def shorten_url(
     ttl: int = Form(...),
 ):
     # 🔒 Require login
-    user = await get_logged_in_user(request)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
+    session_id = request.cookies.get("sessionid")
+    if not session_id or not redis_client.get(session_id):
+        return RedirectResponse(url="/login", status_code=303)
 
     client_id = get_client_id(request)
     try:

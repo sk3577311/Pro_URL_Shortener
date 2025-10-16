@@ -17,43 +17,36 @@
   <link rel="icon" href="{{ url_for('static', path='img/icon.png') }}" type="image/png" sizes="32x32">
 </head>
 
-<body class="overflow-hidden text-gray-800 bg-gray-50 flex flex-col min-h-screen">
+<body class="text-gray-800 bg-gray-50 flex flex-col min-h-screen">
 
   <!-- NAVBAR -->
   <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
 
-      <!-- Left: Logo + Brand -->
+      <!-- Left: Logo -->
       <a href="/" class="flex items-center gap-2">
-        <img src="{{ url_for('static', path='img/icon.png') }}" alt="Shortify Logo" class="w-14 h-18">
+        <img src="{{ url_for('static', path='img/icon.png') }}" alt="Shortify Logo" class="w-10 h-10">
         <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
           Shortify
         </span>
       </a>
 
-      <!-- Right: Navigation -->
+      <!-- Right: Nav -->
       <div class="flex items-center space-x-6 text-gray-700 font-medium">
         <a href="/" class="hover:text-blue-600 transition">Home</a>
         <a href="/pricing" class="hover:text-blue-600 transition">Pricing</a>
         <a href="/about" class="hover:text-blue-600 transition">About</a>
 
         {% if user %}
-        <!-- Logged-in user menu -->
-        <div class="relative group">
-          <button class="flex items-center gap-2 focus:outline-none">
-            <img src="{{ user.picture }}"
-                 alt="User Avatar" class="w-9 h-9 rounded-full border">
-            <span class="font-medium text-gray-800">{{ user.name}}</span>
-          </button>
-
-          <!-- Dropdown -->
-          <div
-            class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition">
-            <a href="/auth/logou" class="block px-4 py-2 text-sm text-red-500 hover:bg-gray-50">Logout</a>
-          </div>
+        <!-- Logged in -->
+        <div class="flex items-center space-x-3">
+          <img src="{{ user.avatar_url }}" alt="Avatar" class="w-8 h-8 rounded-full border">
+          <form action="/auth/logout" method="post">
+            <button type="submit" class="hover:text-red-500 transition">Logout</button>
+          </form>
         </div>
         {% else %}
-        <!-- Logged-out state -->
+        <!-- Not logged in -->
         <a href="/login" class="hover:text-blue-600 transition">Login</a>
         <a href="/signup"
           class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition shadow-sm">
@@ -63,6 +56,7 @@
       </div>
     </div>
   </nav>
+
 
   <!-- MAIN CONTENT -->
   <main class="flex-grow">
