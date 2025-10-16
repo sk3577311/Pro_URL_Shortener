@@ -104,9 +104,9 @@ async def get_logged_in_user(request: Request):
 
 @router.post("/auth/logout")
 async def logout(request: Request):
-    """Log out the current user by deleting their session."""
+    """Log out the current user by deleting their session and redirect to homepage."""
     session_id = request.cookies.get("sessionid")
-    response = RedirectResponse(url="/")
+    response = RedirectResponse(url="/", status_code=303)  # ✅ proper redirect
 
     if session_id:
         redis_client.delete(session_id)
