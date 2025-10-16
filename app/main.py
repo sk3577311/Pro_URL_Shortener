@@ -88,18 +88,27 @@ async def get_logged_in_user(request: Request):
 # Pages
 # ----------------------------
 @app.get("/", response_class=HTMLResponse)
-def home(request: Request):
+async def home(request: Request):
+    # Get session
     session_id = request.cookies.get("sessionid")
-    logged_in_user = None
+    user = None
+
     if session_id:
         email = redis_client.get(session_id)
         avatar = redis_client.get(f"{session_id}:avatar")
         if email:
-            logged_in_user = {"email": email, "avatar_url": avatar}
-    return templates.TemplateResponse(
-        "index.html", {"request": request, "logged_in_user": logged_in_user, "short_url": None, "error": None}
-    )
+            user = {"email": email, "avatar_url": avatar}
 
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "user": user,
+            "short_url": None,
+            "error": None,
+            "logged_in_user": user,  # ✅ consistent naming for templates
+        }
+    )
 @app.get("/pricing")
 async def pricing(request: Request):
     logged_in_user = await get_logged_in_user(request)

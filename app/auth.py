@@ -26,20 +26,18 @@ oauth.register(
 
 router = APIRouter()
 
-
-# ----------------------------- #
-# 🔐 1️⃣ LOGIN REDIRECT
-# ----------------------------- #
-@router.get("/login")
-async def login_redirect(request: Request):
-    """Redirect user to Google login."""
-    redirect_uri = request.url_for("auth_callback", provider="google")
-    client = oauth.create_client("google")
+@router.get("/auth/{provider}")
+async def oauth_login(request: Request, provider: str):
+    """Redirect user to the provider's OAuth login page."""
+    redirect_uri = request.url_for("auth_callback", provider=provider)
+    client = oauth.create_client(provider)
 
     print("🔁 Redirect URI:", redirect_uri, file=sys.stdout, flush=True)
+    print("🧩 GOOGLE_CLIENT_ID =", os.getenv("GOOGLE_CLIENT_ID"), file=sys.stdout, flush=True)
 
+    # If client ID is None, environment isn’t being loaded correctly
     if not os.getenv("GOOGLE_CLIENT_ID"):
-        return JSONResponse({"error": "Missing GOOGLE_CLIENT_ID in env"}, status_code=500)
+        return {"error": "GOOGLE_CLIENT_ID not found. Check .env and deployment environment variables."}
 
     return await client.authorize_redirect(request, redirect_uri)
 
