@@ -5,16 +5,18 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from starlette.responses import RedirectResponse
 from fastapi import APIRouter, Request
+from dotenv import load_dotenv
 from app.redis_client import redis_client  # optional for session store
 
+load_dotenv()  # Load environment variables from .env file
 config = Config(".env")
 oauth = OAuth(config)
 
 # register providers (use your env vars)
 oauth.register(
     name='google',
-    client_id=os.environ.get("GOOGLE_CLIENT_ID"),
-    client_secret=os.environ.get("GOOGLE_CLIENT_SECRET"),
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
     access_token_url='https://oauth2.googleapis.com/token',
     authorize_url='https://accounts.google.com/o/oauth2/v2/auth',
     client_kwargs={'scope': 'openid email profile'}
