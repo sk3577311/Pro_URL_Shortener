@@ -74,7 +74,7 @@ async def auth_callback(request: Request, provider: str):
     # Session management
     user_email = userinfo.get("email") or userinfo.get("login")
     session_id = f"session:{secrets.token_urlsafe(16)}"
-    await redis_client.set(session_id, user_email, ex=7 * 24 * 3600)
+    redis_client.set(session_id, user_email, ex=7 * 24 * 3600)
 
     response = RedirectResponse(url="/dashboard")
     response.set_cookie("sessionid", session_id, httponly=True, samesite="lax")
