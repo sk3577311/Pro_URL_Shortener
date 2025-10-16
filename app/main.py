@@ -78,7 +78,7 @@ async def get_logged_in_user(request: Request):
     session_id = request.cookies.get("sessionid")
     if not session_id:
         return None
-    email = await redis_client.get(session_id)
+    email = redis_client.get(session_id)
     if not email:
         return None
     return {"email": email, "avatar": None}
