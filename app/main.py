@@ -78,7 +78,7 @@ async def get_logged_in_user(request: Request):
     session_id = request.cookies.get("sessionid")
     if not session_id:
         return None
-    email = redis_client.get(session_id)
+    email = await redis_client.get(session_id)
     if not email:
         return None
     return {"email": email, "avatar": None}
@@ -88,7 +88,7 @@ async def get_logged_in_user(request: Request):
 # ----------------------------
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    user = get_logged_in_user(request)
+    user = await get_logged_in_user(request)
     return templates.TemplateResponse(
         "index.html",
         {"request": request, "short_url": None, "error": None, "logged_in_user": user},
@@ -96,24 +96,24 @@ async def home(request: Request):
 
 @app.get("/pricing")
 async def pricing(request: Request):
-    user = get_logged_in_user(request)
+    user = await get_logged_in_user(request)
     return templates.TemplateResponse("pricing.html", {"request": request, "logged_in_user": user})
 
 @app.get("/about")
 async def about(request: Request):
-    user = get_logged_in_user(request)
+    user = await get_logged_in_user(request)
     return templates.TemplateResponse("about.html", {"request": request, "logged_in_user": user})
 
 @app.get("/login")
 async def login_page(request: Request):
-    user = get_logged_in_user(request)
+    user = await get_logged_in_user(request)
     if user:
         return RedirectResponse(url="/")  # Already logged in
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/signup")
 async def signup_page(request: Request):
-    user = get_logged_in_user(request)
+    user = await get_logged_in_user(request)
     if user:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("signup.html", {"request": request})
@@ -129,7 +129,7 @@ async def shorten_url(
     ttl: int = Form(...),
 ):
     # 🔒 Require login
-    user = get_logged_in_user(request)
+    user = await get_logged_in_user(request)
     if not user:
         return RedirectResponse(url="/login", status_code=302)
 
@@ -223,7 +223,7 @@ async def stats(short_code: str):
 async def analytics_page(request: Request, code: str):
     meta = redis_client.hgetall(f"meta:{code}") or {}
     clicks = redis_client.get(f"clicks:{code}") or 0
-    user = get_logged_in_user(request)
+    user = await get_logged_in_user(request)
     return templates.TemplateResponse(
         "analytics.html",
         {"request": request, "code": code, "meta": meta, "clicks": int(clicks), "logged_in_user": user},
