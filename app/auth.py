@@ -14,12 +14,11 @@ oauth = OAuth(config)
 
 # register providers (use your env vars)
 oauth.register(
-    name='google',
+    name="google",
     client_id=os.getenv("GOOGLE_CLIENT_ID"),
     client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
-    access_token_url='https://oauth2.googleapis.com/token',
-    authorize_url='https://accounts.google.com/o/oauth2/v2/auth',
-    client_kwargs={'scope': 'openid email profile'}
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
 )
 router = APIRouter()
 
