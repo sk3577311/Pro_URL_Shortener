@@ -79,9 +79,9 @@ async def auth_callback(request: Request, provider: str):
     avatar = userinfo.get("picture")
 
     session_id = f"session:{secrets.token_urlsafe(16)}"
-    await redis_client.set(session_id, user_email, ex=7 * 24 * 3600)
+    redis_client.set(session_id, user_email, ex=7 * 24 * 3600)
     if avatar:
-        await redis_client.set(f"{session_id}:avatar", avatar, ex=7 * 24 * 3600)
+        redis_client.set(f"{session_id}:avatar", avatar, ex=7 * 24 * 3600)
 
     # Redirect to homepage after successful login
     response = RedirectResponse(url="/")
