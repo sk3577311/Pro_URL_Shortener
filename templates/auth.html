@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Auth | Shortify</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/index.css') }}">
 </head>
 <body>
     <div class="auth-container">
         <!-- Left Panel -->
         <div class="auth-form-container">
             <div class="logo">
-                <img src="{{ url_for('static', filename='img/icon.png') }}" alt="Shortify Logo">
+                <img src="{{ url_for('static', path='img/icon.png') }}" alt="Shortify Logo">
             </div>
 
             <div class="form-toggle">
@@ -28,7 +28,7 @@
                 <button type="submit" class="primary-btn">Log In</button>
                 <div class="divider">or</div>
                 <a href="/auth/google" class="google-btn">
-                    <img src="{{ url_for('static', filename='icons/google.svg') }}" alt="Google"> Continue with Google
+                    <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google"> Continue with Google
                 </a>
             </form>
 
@@ -43,14 +43,14 @@
                 <button type="submit" class="primary-btn">Sign Up</button>
                 <div class="divider">or</div>
                 <a href="/auth/google" class="google-btn">
-                    <img src="{{ url_for('static', filename='icons/google.svg') }}" alt="Google"> Continue with Google
+                    <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google"> Continue with Google
                 </a>
             </form>
         </div>
 
         <!-- Right Panel -->
         <div class="auth-image">
-            <img src="{{ url_for('static', filename='img/login_signup.jpg') }}" alt="Background Art">
+            <img src="{{ url_for('static', path='img/login_signup.jpg') }}" alt="Background Art">
         </div>
     </div>
 
