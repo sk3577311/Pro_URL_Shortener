@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Auth | Shortify</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/index.css') }}">
 </head>
 <body>
   <div class="auth-container">
@@ -12,7 +12,7 @@
     <!-- Left Side -->
     <div class="auth-left">
       <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+        <img src="{{ url_for('static', path='img/icon.png') }}" alt="Logo">
       </div>
 
       <div class="form-header">
@@ -44,7 +44,7 @@
         <div class="divider"><span>or login using</span></div>
 
         <a href="/auth/google" class="google-login">
-          <img src="{{ url_for('static', filename='images/google.svg') }}" alt="Google"> 
+          <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google"> 
         </a>
       </form>
 
@@ -70,7 +70,7 @@
 
     <!-- Right Side -->
     <div class="auth-right">
-      <img src="{{ url_for('static', filename='images/bg-art.jpg') }}" alt="Background">
+      <img src="{{ url_for('static', path='img/login_signup.jpg') }}" alt="Background">
     </div>
 
   </div>
