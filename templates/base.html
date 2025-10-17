@@ -75,10 +75,10 @@
           {% else %}
           <!-- Desktop auth buttons -->
           <div class="hidden md:flex items-center gap-3">
-            <a href="/login" class="text-gray-700 hover:text-blue-600 transition">Login</a>
-            <a href="/signup"
+            <a href="/auth" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">Login</a>
+            <!-- <a href="/signup"
               class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">Sign
-              up</a>
+              up</a> -->
           </div>
           {% endif %}
         </div>
@@ -96,7 +96,7 @@
 
           {% if not user %}
           <a href="/auth"
-            class="block mt-1 px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white text-center hover:bg-blue-700">Login</a>
+            class="block px-3 py-2 rounded-md text-base font-medium bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-center hover:opacity-95">Login</a>
           <!-- <a href="/signup"
             class="block px-3 py-2 rounded-md text-base font-medium bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-center hover:opacity-95">Sign
             up</a> -->
