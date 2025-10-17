@@ -2,24 +2,28 @@
 {% block title %}Sign Up | Shortify{% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row w-full max-w-6xl h-[90vh] rounded-2xl overflow-hidden shadow-2xl">
+<div class="flex flex-col md:flex-row w-full h-screen">
 
-  <!-- Left: Image -->
+  <!-- Left Panel (Background Image) -->
   <div class="hidden md:block w-1/2 relative">
     <img src="{{ url_for('static', path='img/login_signup.jpg') }}"
          alt="Signup Background"
-         class="w-full h-full object-cover" />
+         class="absolute inset-0 w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-black/40"></div>
   </div>
 
-  <!-- Right: Signup Form -->
-  <div class="w-full md:w-1/2 bg-gray-900 p-10 flex flex-col justify-center">
-    <div class="max-w-sm mx-auto w-full">
+  <!-- Right Panel -->
+  <div class="w-full md:w-1/2 bg-[#0f172a] flex flex-col justify-center px-8 md:px-16">
+    <div class="max-w-sm w-full mx-auto">
+      <!-- Logo -->
       <div class="flex justify-center mb-6">
-        <img src="{{ url_for('static', path='img/logo.svg') }}" alt="Shortify Logo" class="w-14 h-14">
+        <img src="{{ url_for('static', path='img/icon.png') }}" alt="Shortify Logo" class="w-14 h-14">
       </div>
-      <h1 class="text-3xl font-bold mb-2 text-center">Create Account 🚀</h1>
+
+      <h1 class="text-3xl font-bold text-center mb-2 text-white">Create Account 🚀</h1>
       <p class="text-gray-400 text-center mb-8">Join Shortify to shorten & manage your links</p>
 
+      <!-- Signup Form -->
       <form method="post" action="/auth/signup" class="flex flex-col gap-4">
         <input type="text" name="name" placeholder="Full Name"
                class="bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
@@ -34,8 +38,14 @@
         </button>
       </form>
 
-      <div class="text-center text-sm text-gray-400 my-4">or</div>
+      <!-- Divider -->
+      <div class="text-center text-sm text-gray-500 my-5 flex items-center">
+        <hr class="flex-grow border-gray-700">
+        <span class="mx-2 text-gray-500">or</span>
+        <hr class="flex-grow border-gray-700">
+      </div>
 
+      <!-- Google Button -->
       <a href="/auth/google"
          class="flex items-center justify-center gap-3 bg-gray-800 border border-gray-700 py-3 rounded-lg text-gray-300 hover:bg-gray-700 transition">
         <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google" class="w-5 h-5">
@@ -44,7 +54,7 @@
 
       <p class="text-center text-gray-400 text-sm mt-6">
         Already have an account?
-        <a href="/login" class="text-pink-400 hover:underline">Log in</a>
+        <a href="/login" class="text-pink-400 hover:underline">Login</a>
       </p>
     </div>
   </div>
