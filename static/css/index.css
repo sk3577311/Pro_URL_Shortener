@@ -5,35 +5,40 @@
   overflow: hidden;
   background: #0d0d2b;
   color: #fff;
+  justify-content: center;
+  align-items: center;
 }
 
-/* LEFT PANEL */
+/* LEFT PANEL (CARD CONTAINER) */
 .auth-left {
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  background: #0d0d2b;
+  width: 100%;
+  max-width: 420px;
 }
 
 /* CARD */
 .auth-card {
   width: 100%;
-  max-width: 380px;
   background: #101035;
   border-radius: 16px;
   padding: 2rem 2.5rem;
   box-shadow: 0 0 25px rgba(255, 0, 255, 0.15);
-  transition: 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+  position: relative;
+  overflow: hidden;
 }
 
+/* LOGO */
 .auth-logo {
   display: block;
   margin: 0 auto 1rem;
   width: 80px;
 }
 
+/* HEADINGS */
 .auth-card h2 {
   text-align: center;
   font-weight: 700;
@@ -46,7 +51,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* TOGGLE */
+/* TOGGLE BUTTONS */
 .auth-toggle {
   display: flex;
   justify-content: center;
@@ -67,9 +72,38 @@
 .auth-toggle button.active {
   background: linear-gradient(90deg, #ff008c, #b000ff);
   border: none;
+  transform: scale(1.05);
 }
 
-/* INPUT FIELDS */
+/* FORM TRANSITION CONTAINER */
+.form-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: 100%;
+}
+
+.auth-form {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.4s ease-in-out;
+}
+
+.auth-form.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.auth-form.exit-left {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* INPUTS */
 .auth-input {
   display: flex;
   flex-direction: column;
@@ -95,7 +129,7 @@
   border-color: #b000ff;
 }
 
-/* REMEMBER / FORGOT */
+/* OPTIONS (Remember + Forgot) */
 .auth-options {
   display: flex;
   justify-content: space-between;
@@ -109,7 +143,7 @@
   text-decoration: none;
 }
 
-/* BUTTON */
+/* SUBMIT BUTTON */
 .auth-btn {
   width: 100%;
   background: linear-gradient(90deg, #ff008c, #b000ff);
@@ -146,13 +180,8 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.auth-divider::before {
-  left: 0;
-}
-
-.auth-divider::after {
-  right: 0;
-}
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
 
 /* GOOGLE LOGIN */
 .google-login {
@@ -184,13 +213,13 @@
   text-decoration: none;
 }
 
-/* RIGHT PANEL */
+/* BACKGROUND RIGHT PANEL */
 .auth-right {
   flex: 1.2;
   background: url('../img/login_signup.jpg') center/cover no-repeat;
 }
 
-/* MOBILE RESPONSIVENESS */
+/* RESPONSIVE */
 @media (max-width: 900px) {
   .auth-container {
     flex-direction: column;
