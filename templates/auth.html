@@ -1,78 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auth | Shortify</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/index.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth | Shortify</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
-    <div class="auth-container">
-        <!-- Left Panel -->
-        <div class="auth-form-container">
-            <div class="logo">
-                <img src="{{ url_for('static', path='img/icon.png') }}" alt="Shortify Logo">
-            </div>
+  <div class="auth-container">
+    
+    <!-- Left Side -->
+    <div class="auth-left">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+      </div>
 
-            <div class="form-toggle">
-                <button id="loginBtn" class="active">Login</button>
-                <button id="signupBtn">Signup</button>
-            </div>
+      <div class="form-header">
+        <h2 id="formTitle">Login</h2>
+        <p id="formSubtitle">Sign In to Your Account</p>
+      </div>
 
-            <!-- Login Form -->
-            <form id="loginForm" method="POST" action="/auth/login">
-                <h2>Welcome Back 👋</h2>
-                <p>Login to manage your shortened URLs</p>
-                <input type="email" name="email" placeholder="Email Address" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit" class="primary-btn">Log In</button>
-                <div class="divider">or</div>
-                <a href="/auth/google" class="google-btn">
-                    <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google"> Continue with Google
-                </a>
-            </form>
+      <div class="form-toggle">
+        <button id="loginBtn" class="active">Login</button>
+        <button id="signupBtn">Signup</button>
+      </div>
 
-            <!-- Signup Form -->
-            <form id="signupForm" method="POST" action="/auth/signup" style="display:none;">
-                <h2>Create Account 🚀</h2>
-                <p>Join Shortify to manage your links</p>
-                <input type="text" name="fullname" placeholder="Full Name" required>
-                <input type="email" name="email" placeholder="Email Address" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-                <button type="submit" class="primary-btn">Sign Up</button>
-                <div class="divider">or</div>
-                <a href="/auth/google" class="google-btn">
-                    <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google"> Continue with Google
-                </a>
-            </form>
+      <!-- LOGIN FORM -->
+      <form id="loginForm" method="POST" action="/auth/login">
+        <label>Email/Username</label>
+        <input type="text" name="email" placeholder="Enter email or username" required>
+        
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter password" required>
+
+        <div class="remember">
+          <input type="checkbox" id="remember">
+          <label for="remember">Remember Me</label>
         </div>
 
-        <!-- Right Panel -->
-        <div class="auth-image">
-            <img src="{{ url_for('static', path='img/login_signup.jpg') }}" alt="Background Art">
-        </div>
+        <button type="submit" class="gradient-btn">Login</button>
+
+        <a href="#" class="forgot">Forgot Password</a>
+        <div class="divider"><span>or login using</span></div>
+
+        <a href="/auth/google" class="google-login">
+          <img src="{{ url_for('static', filename='images/google.svg') }}" alt="Google"> 
+        </a>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form id="signupForm" method="POST" action="/auth/signup" style="display:none;">
+        <label>Full Name</label>
+        <input type="text" name="fullname" placeholder="Enter full name" required>
+
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Enter email" required>
+
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" placeholder="Confirm password" required>
+
+        <button type="submit" class="gradient-btn">Signup</button>
+      </form>
+
+      <div class="terms">Terms</div>
     </div>
 
-    <script>
-        const loginBtn = document.getElementById('loginBtn');
-        const signupBtn = document.getElementById('signupBtn');
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
+    <!-- Right Side -->
+    <div class="auth-right">
+      <img src="{{ url_for('static', filename='images/bg-art.jpg') }}" alt="Background">
+    </div>
 
-        loginBtn.addEventListener('click', () => {
-            loginForm.style.display = 'block';
-            signupForm.style.display = 'none';
-            loginBtn.classList.add('active');
-            signupBtn.classList.remove('active');
-        });
+  </div>
 
-        signupBtn.addEventListener('click', () => {
-            signupForm.style.display = 'block';
-            loginForm.style.display = 'none';
-            signupBtn.classList.add('active');
-            loginBtn.classList.remove('active');
-        });
-    </script>
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const title = document.getElementById('formTitle');
+    const subtitle = document.getElementById('formSubtitle');
+
+    loginBtn.addEventListener('click', () => {
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
+      loginBtn.classList.add('active');
+      signupBtn.classList.remove('active');
+      title.textContent = 'Login';
+      subtitle.textContent = 'Sign In to Your Account';
+    });
+
+    signupBtn.addEventListener('click', () => {
+      signupForm.style.display = 'block';
+      loginForm.style.display = 'none';
+      signupBtn.classList.add('active');
+      loginBtn.classList.remove('active');
+      title.textContent = 'Signup';
+      subtitle.textContent = 'Create a New Account';
+    });
+  </script>
 </body>
 </html>

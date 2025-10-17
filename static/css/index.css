@@ -6,7 +6,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: #0b0b14;
+  background: #000010;
   color: #fff;
   overflow: hidden;
 }
@@ -16,80 +16,121 @@ body {
   height: 100vh;
 }
 
-/* Left Panel */
-.auth-form-container {
+/* LEFT PANEL */
+.auth-left {
   width: 40%;
-  background: #0d0d1a;
+  background: #070722;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 2rem 3rem;
-  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem 3rem;
+  position: relative;
 }
 
 .logo img {
-  width: 60px;
+  width: 80px;
   margin-bottom: 1rem;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.form-header h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.form-header p {
+  color: #bbb;
+  font-size: 0.9rem;
 }
 
 .form-toggle {
   display: flex;
   gap: 10px;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-toggle button {
-  background: none;
-  border: none;
-  color: #bbb;
+  background: transparent;
+  border: 1px solid #ff007f;
+  color: #ff007f;
   font-weight: 500;
+  border-radius: 6px;
+  padding: 6px 14px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: color 0.3s ease;
+  transition: 0.3s;
 }
 
 .form-toggle button.active {
-  color: #ff007f;
-  border-bottom: 2px solid #ff007f;
-  padding-bottom: 3px;
+  background: #ff007f;
+  color: white;
 }
 
-h2 {
-  margin-bottom: 0.5rem;
-  font-size: 1.6rem;
+form {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
 }
 
-p {
-  margin-bottom: 1.5rem;
-  color: #aaa;
-  font-size: 0.95rem;
+label {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  color: #ccc;
 }
 
 input {
-  width: 100%;
-  padding: 0.8rem;
+  background: transparent;
+  border: 1px solid #222;
+  padding: 0.7rem;
+  border-radius: 6px;
   margin-bottom: 1rem;
-  border: none;
-  border-radius: 8px;
-  background: #1a1a2e;
-  color: #fff;
-  outline: none;
+  color: white;
 }
 
-.primary-btn {
-  background: linear-gradient(90deg, #ff007f, #7b2ff7);
+input:focus {
+  outline: none;
+  border-color: #ff007f;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.remember input[type="checkbox"] {
+  accent-color: #ff007f;
+}
+
+.gradient-btn {
+  background: linear-gradient(90deg, #ff007f, #a32eff);
   border: none;
   padding: 0.8rem;
-  width: 100%;
   border-radius: 8px;
-  color: #fff;
+  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  margin-bottom: 1rem;
+  transition: 0.3s;
 }
 
-.primary-btn:hover {
+.gradient-btn:hover {
   transform: translateY(-2px);
+}
+
+.forgot {
+  color: #ff007f;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 .divider {
@@ -99,53 +140,71 @@ input {
   position: relative;
 }
 
-.google-btn {
-  background: #fff;
-  color: #333;
+.divider span {
+  background: #070722;
+  padding: 0 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: #222;
+  top: 50%;
+  left: 0;
+  z-index: 1;
+}
+
+.google-login {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 8px;
-  border-radius: 8px;
-  padding: 0.7rem;
-  font-weight: 500;
-  transition: 0.2s;
+  align-items: center;
+  background: #fff;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
 }
 
-.google-btn img {
-  width: 20px;
+.google-login img {
+  width: 24px;
 }
 
-.google-btn:hover {
-  background: #eaeaea;
+.terms {
+  position: absolute;
+  bottom: 1rem;
+  font-size: 0.8rem;
+  color: #777;
 }
 
-/* Right Panel */
-.auth-image {
+/* RIGHT PANEL */
+.auth-right {
   width: 60%;
   position: relative;
 }
 
-.auth-image img {
+.auth-right img {
   width: 100%;
   height: 100vh;
   object-fit: cover;
   filter: brightness(90%);
 }
 
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 900px) {
   .auth-container {
     flex-direction: column;
   }
 
-  .auth-form-container {
+  .auth-left {
     width: 100%;
     height: auto;
-    box-shadow: none;
   }
 
-  .auth-image {
+  .auth-right {
     display: none;
   }
 }
