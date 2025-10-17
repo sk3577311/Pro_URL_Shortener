@@ -1,10 +1,9 @@
 /* PAGE LAYOUT */
 .auth-container {
   display: flex;
-  height: 100vh;
+  /* height: 100vh; */
   overflow: hidden;
   background: #0d0d2b;
-  color: #fff;
   justify-content: center;
   align-items: center;
 }
@@ -13,10 +12,10 @@
 .auth-left {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 2rem;
+  align-items: left;
+  /* padding: 2rem; */
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
 }
 
 /* CARD */
@@ -227,9 +226,9 @@
     align-items: center;
   }
 
-  .auth-right {
+  /* .auth-right {
     display: none;
-  }
+  } */
 
   .auth-left {
     width: 100%;
