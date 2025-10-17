@@ -1,43 +1,39 @@
 /* PAGE LAYOUT */
 .auth-container {
   display: flex;
-  /* height: 100vh; */
+  height: 100vh;
   overflow: hidden;
   background: #0d0d2b;
-  justify-content: center;
-  align-items: center;
+  color: #fff;
 }
 
-/* LEFT PANEL (CARD CONTAINER) */
+/* LEFT PANEL */
 .auth-left {
+  flex: 1;
   display: flex;
   justify-content: center;
-  align-items: left;
-  /* padding: 2rem; */
-  width: 100%;
-  max-width: 380px;
+  align-items: center;
+  padding: 2rem;
+  background: #0d0d2b;
 }
 
 /* CARD */
 .auth-card {
   width: 100%;
+  max-width: 380px;
   background: #101035;
   border-radius: 16px;
   padding: 2rem 2.5rem;
   box-shadow: 0 0 25px rgba(255, 0, 255, 0.15);
-  transition: all 0.4s ease-in-out;
-  position: relative;
-  overflow: hidden;
+  transition: 0.4s ease-in-out;
 }
 
-/* LOGO */
 .auth-logo {
   display: block;
   margin: 0 auto 1rem;
   width: 80px;
 }
 
-/* HEADINGS */
 .auth-card h2 {
   text-align: center;
   font-weight: 700;
@@ -50,7 +46,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* TOGGLE BUTTONS */
+/* TOGGLE */
 .auth-toggle {
   display: flex;
   justify-content: center;
@@ -71,38 +67,9 @@
 .auth-toggle button.active {
   background: linear-gradient(90deg, #ff008c, #b000ff);
   border: none;
-  transform: scale(1.05);
 }
 
-/* FORM TRANSITION CONTAINER */
-.form-wrapper {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  height: 100%;
-}
-
-.auth-form {
-  position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.4s ease-in-out;
-}
-
-.auth-form.active {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.auth-form.exit-left {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-/* INPUTS */
+/* INPUT FIELDS */
 .auth-input {
   display: flex;
   flex-direction: column;
@@ -128,7 +95,7 @@
   border-color: #b000ff;
 }
 
-/* OPTIONS (Remember + Forgot) */
+/* REMEMBER / FORGOT */
 .auth-options {
   display: flex;
   justify-content: space-between;
@@ -142,7 +109,7 @@
   text-decoration: none;
 }
 
-/* SUBMIT BUTTON */
+/* BUTTON */
 .auth-btn {
   width: 100%;
   background: linear-gradient(90deg, #ff008c, #b000ff);
@@ -179,8 +146,13 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.auth-divider::before { left: 0; }
-.auth-divider::after { right: 0; }
+.auth-divider::before {
+  left: 0;
+}
+
+.auth-divider::after {
+  right: 0;
+}
 
 /* GOOGLE LOGIN */
 .google-login {
@@ -212,13 +184,13 @@
   text-decoration: none;
 }
 
-/* BACKGROUND RIGHT PANEL */
+/* RIGHT PANEL */
 .auth-right {
   flex: 1.2;
   background: url('../img/login_signup.jpg') center/cover no-repeat;
 }
 
-/* RESPONSIVE */
+/* MOBILE RESPONSIVENESS */
 @media (max-width: 900px) {
   .auth-container {
     flex-direction: column;
@@ -226,9 +198,9 @@
     align-items: center;
   }
 
-  /* .auth-right {
+  .auth-right {
     display: none;
-  } */
+  }
 
   .auth-left {
     width: 100%;
