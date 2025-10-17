@@ -1,0 +1,110 @@
+{% extends "base_auth.html" %}
+{% block title %}Login / Sign Up | Shortify{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0f172a] relative overflow-hidden">
+  <!-- Background Image -->
+  <img src="{{ url_for('static', path='img/login-bg-art.jpg') }}"
+       class="absolute inset-0 w-full h-full object-cover opacity-20" alt="Background"/>
+
+  <div class="relative z-10 bg-gray-900/60 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-xl w-[90%] max-w-md p-8">
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <img src="{{ url_for('static', path='icons/logo.svg') }}" alt="Shortify Logo" class="w-14 h-14">
+    </div>
+
+    <!-- Form container -->
+    <div id="form-container" class="transition-all duration-500">
+      <!-- Login Form -->
+      <form id="login-form" method="post" action="/auth/login" class="space-y-5">
+        <h2 class="text-3xl font-semibold text-center text-white">Welcome Back 👋</h2>
+        <p class="text-center text-gray-400">Login to manage your links</p>
+
+        <input type="email" name="email" placeholder="Email"
+               class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+        <input type="password" name="password" placeholder="Password"
+               class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+
+        <button type="submit"
+                class="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition">
+          Login
+        </button>
+
+        <div class="text-center text-sm text-gray-500">or</div>
+
+        <a href="/auth/google"
+           class="flex items-center justify-center gap-3 bg-gray-800 border border-gray-700 py-3 rounded-lg text-gray-300 hover:bg-gray-700 transition">
+          <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google" class="w-5 h-5">
+          <span>Continue with Google</span>
+        </a>
+
+        <p class="text-center text-gray-400 text-sm mt-4">
+          Don’t have an account?
+          <button type="button" id="show-signup" class="text-pink-400 hover:underline font-medium">Sign up</button>
+        </p>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" method="post" action="/auth/signup" class="hidden space-y-5">
+        <h2 class="text-3xl font-semibold text-center text-white">Create Account 🚀</h2>
+        <p class="text-center text-gray-400">Join Shortify and manage your links</p>
+
+        <input type="text" name="name" placeholder="Full Name"
+               class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+        <input type="email" name="email" placeholder="Email"
+               class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+        <input type="password" name="password" placeholder="Password"
+               class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+
+        <button type="submit"
+                class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition">
+          Sign Up
+        </button>
+
+        <div class="text-center text-sm text-gray-500">or</div>
+
+        <a href="/auth/google"
+           class="flex items-center justify-center gap-3 bg-gray-800 border border-gray-700 py-3 rounded-lg text-gray-300 hover:bg-gray-700 transition">
+          <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google" class="w-5 h-5">
+          <span>Continue with Google</span>
+        </a>
+
+        <p class="text-center text-gray-400 text-sm mt-4">
+          Already have an account?
+          <button type="button" id="show-login" class="text-pink-400 hover:underline font-medium">Login</button>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Swap Script -->
+<script>
+  const loginForm = document.getElementById("login-form");
+  const signupForm = document.getElementById("signup-form");
+  const showSignup = document.getElementById("show-signup");
+  const showLogin = document.getElementById("show-login");
+
+  showSignup.addEventListener("click", () => {
+    loginForm.classList.add("hidden");
+    signupForm.classList.remove("hidden");
+    signupForm.classList.add("animate-fadeIn");
+  });
+
+  showLogin.addEventListener("click", () => {
+    signupForm.classList.add("hidden");
+    loginForm.classList.remove("hidden");
+    loginForm.classList.add("animate-fadeIn");
+  });
+</script>
+
+<!-- Fade Animation -->
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.4s ease-in-out; }
+</style>
+
+{% endblock %}

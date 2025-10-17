@@ -119,12 +119,12 @@ async def about(request: Request):
     logged_in_user = await get_logged_in_user(request)
     return templates.TemplateResponse("about.html", {"request": request, "logged_in_user": logged_in_user})
 
-@app.get("/login")
+@app.get("/auth")
 async def login_page(request: Request):
     logged_in_user = await get_logged_in_user(request)
     if logged_in_user:
         return RedirectResponse(url="/")  # Already logged in
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("auth.html", {"request": request})
 
 @app.get("/signup")
 async def signup_page(request: Request):
