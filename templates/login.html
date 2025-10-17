@@ -1,47 +1,53 @@
-{% extends "base.html" %}
+{% extends "base_auth.html" %}
 {% block title %}Login | Shortify{% endblock %}
 
 {% block content %}
-<section class="flex flex-col-reverse md:flex-row items-center justify-center min-h-[80vh] px-6 py-12">
-  <!-- Left: Image -->
-  <div class="w-full md:w-full flex justify-center mt-8 md:mt-0">
-    <img src="{{ url_for('static', path='img/login-url-shortener.jpg') }}" 
-         alt="Login Illustration" 
-         class="w-64 sm:w-80 md:w-96 drop-shadow-lg" />
-  </div>
+<div class="flex flex-col md:flex-row w-full max-w-6xl h-[90vh] rounded-2xl overflow-hidden shadow-2xl">
 
-  <!-- Right: Login Card -->
-  <div class="w-full md:w-1/2 flex flex-col items-center">
-    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
-      <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-center text-gray-800">Welcome Back 👋</h1>
-      <p class="text-gray-500 text-center mb-6">Login to manage your shortened URLs</p>
-
-      <div class="flex flex-col gap-4">
-        <!-- Google Login -->
-        <a href="/auth/google"
-           class="flex items-center justify-center gap-3 bg-white border border-gray-300 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-          <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google" class="w-5 h-5">
-          <span>Continue with Google</span>
-        </a>
-
-        <!-- Optional Email Login -->
-        <form method="post" action="/auth/login" class="flex flex-col gap-4">
-          <input type="email" name="email" placeholder="Email address"
-                 class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-          <input type="password" name="password" placeholder="Password"
-                 class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-          <button type="submit"
-                  class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-2 rounded-lg hover:opacity-90 transition">
-            Log In
-          </button>
-        </form>
+  <!-- Left Panel (Login Form) -->
+  <div class="w-full md:w-1/2 bg-gray-900 p-10 flex flex-col justify-center">
+    <div class="max-w-sm mx-auto w-full">
+      <div class="flex justify-center mb-6">
+        <img src="{{ url_for('static', path='icons/logo.svg') }}" alt="Shortify Logo" class="w-14 h-14">
       </div>
+      <h1 class="text-3xl font-bold mb-2 text-center">Welcome Back 👋</h1>
+      <p class="text-gray-400 text-center mb-8">Sign in to your account</p>
 
-      <p class="text-center text-gray-500 text-sm mt-6">
+      <form method="post" action="/auth/login" class="flex flex-col gap-4">
+        <input type="email" name="email" placeholder="Email or Username"
+               class="bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+        <input type="password" name="password" placeholder="Password"
+               class="bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+        <div class="flex justify-between items-center text-sm text-gray-400">
+          <label><input type="checkbox" class="mr-1"> Remember Me</label>
+          <a href="#" class="text-pink-400 hover:underline">Forgot Password?</a>
+        </div>
+        <button type="submit"
+                class="bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition">
+          Login
+        </button>
+      </form>
+
+      <div class="text-center text-sm text-gray-400 my-4">or</div>
+
+      <a href="/auth/google"
+         class="flex items-center justify-center gap-3 bg-gray-800 border border-gray-700 py-3 rounded-lg text-gray-300 hover:bg-gray-700 transition">
+        <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google" class="w-5 h-5">
+        <span>Continue with Google</span>
+      </a>
+
+      <p class="text-center text-gray-400 text-sm mt-6">
         Don’t have an account?
-        <a href="/signup" class="text-blue-600 hover:underline">Sign up</a>
+        <a href="/signup" class="text-pink-400 hover:underline">Sign up</a>
       </p>
     </div>
   </div>
-</section>
+
+  <!-- Right Panel (Background Image) -->
+  <div class="hidden md:block w-1/2 relative">
+    <img src="{{ url_for('static', path='img/login-bg-art.jpg') }}"
+         alt="Login Background"
+         class="w-full h-full object-cover" />
+  </div>
+</div>
 {% endblock %}
