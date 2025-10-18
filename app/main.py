@@ -126,12 +126,12 @@ async def login_page(request: Request):
         return RedirectResponse(url="/")  # Already logged in
     return templates.TemplateResponse("auth.html", {"request": request})
 
-@app.get("/signup")
-async def signup_page(request: Request):
-    logged_in_user = await get_logged_in_user(request)
-    if logged_in_user:
-        return RedirectResponse(url="/")
-    return templates.TemplateResponse("signup.html", {"request": request})
+# @app.get("/signup")
+# async def signup_page(request: Request):
+#     logged_in_user = await get_logged_in_user(request)
+#     if logged_in_user:
+#         return RedirectResponse(url="/")
+#     return templates.TemplateResponse("signup.html", {"request": request})
 
 # ----------------------------
 # POST /shorten — requires login

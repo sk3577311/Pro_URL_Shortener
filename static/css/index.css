@@ -1,52 +1,37 @@
-/* PAGE LAYOUT */
+/* AUTH PAGE LAYOUT */
 .auth-container {
   display: flex;
   height: 100vh;
   overflow: hidden;
   background: #0d0d2b;
-  color: #fff;
 }
 
-/* LEFT PANEL */
 .auth-left {
   flex: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 2rem;
+  justify-content: center;
   background: #0d0d2b;
+  color: #fff;
+  padding: 2rem;
 }
 
-/* CARD */
 .auth-card {
-  width: 100%;
-  max-width: 380px;
   background: #101035;
   border-radius: 16px;
-  padding: 2rem 2.5rem;
-  box-shadow: 0 0 25px rgba(255, 0, 255, 0.15);
-  transition: 0.4s ease-in-out;
-}
-
-.auth-logo {
-  display: block;
-  margin: 0 auto 1rem;
-  width: 80px;
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.1);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  transition: all 0.4s ease-in-out;
 }
 
 .auth-card h2 {
   text-align: center;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
-.auth-card p {
-  text-align: center;
-  color: #bbb;
-  margin-bottom: 1.5rem;
-}
-
-/* TOGGLE */
 .auth-toggle {
   display: flex;
   justify-content: center;
@@ -57,11 +42,11 @@
 .auth-toggle button {
   background: none;
   border: 1px solid #ff008c;
-  border-radius: 8px;
   color: #fff;
+  border-radius: 8px;
   padding: 0.4rem 1.2rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .auth-toggle button.active {
@@ -69,11 +54,10 @@
   border: none;
 }
 
-/* INPUT FIELDS */
 .auth-input {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .auth-input label {
@@ -82,58 +66,45 @@
 }
 
 .auth-input input {
-  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.6rem 0.8rem;
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   outline: none;
+  width: 100%;
   transition: 0.3s ease;
 }
 
 .auth-input input:focus {
   border-color: #b000ff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* REMEMBER / FORGOT */
-.auth-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
-}
-
-.auth-options a {
-  color: #ff008c;
-  text-decoration: none;
-}
-
-/* BUTTON */
 .auth-btn {
   width: 100%;
   background: linear-gradient(90deg, #ff008c, #b000ff);
+  color: #fff;
+  font-weight: 600;
   border: none;
   border-radius: 8px;
   padding: 0.7rem 0;
-  font-weight: 600;
-  color: #fff;
+  margin-top: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .auth-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(176, 0, 255, 0.4);
+  box-shadow: 0 0 15px rgba(176, 0, 255, 0.3);
 }
 
-/* DIVIDER */
+/* GOOGLE LOGIN */
 .auth-divider {
   text-align: center;
-  color: #888;
   margin: 1.5rem 0;
+  color: rgba(255, 255, 255, 0.6);
   position: relative;
-  font-size: 0.9rem;
 }
 
 .auth-divider::before,
@@ -146,15 +117,9 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.auth-divider::before {
-  left: 0;
-}
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
 
-.auth-divider::after {
-  right: 0;
-}
-
-/* GOOGLE LOGIN */
 .google-login {
   display: flex;
   justify-content: center;
@@ -164,69 +129,25 @@
   width: 40px;
   height: 40px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s;
 }
 
 .google-login img:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-/* TERMS */
-.auth-terms {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #888;
-}
-
-.auth-terms a {
-  color: #ff008c;
-  text-decoration: none;
-}
-
-/* RIGHT PANEL */
+/* RIGHT SIDE ART PANEL */
 .auth-right {
   flex: 1.2;
   background: url('../img/login_signup.jpg') center/cover no-repeat;
+  transition: opacity 0.5s ease-in-out;
 }
 
-/* MOBILE RESPONSIVENESS */
 @media (max-width: 900px) {
   .auth-container {
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
   }
-
   .auth-right {
     display: none;
-  }
-
-  .auth-left {
-    width: 100%;
-    padding: 1.5rem;
-  }
-
-  .auth-card {
-    padding: 1.5rem;
-    box-shadow: none;
-    background: transparent;
-  }
-
-  .auth-input input {
-    font-size: 0.95rem;
-  }
-
-  .auth-btn {
-    padding: 0.8rem 0;
-  }
-
-  .auth-toggle button {
-    font-size: 0.9rem;
-    padding: 0.3rem 1rem;
-  }
-
-  .auth-logo {
-    width: 70px;
   }
 }

@@ -12,10 +12,8 @@
   <div class="auth-container">
     <div class="auth-left">
       <div class="auth-card">
-        <img src="/static/logo.png" alt="Logo" class="auth-logo" />
-
         <h2 id="form-title">Login</h2>
-        <p id="form-subtitle">Sign In to Your Account</p>
+        <p id="form-subtitle">Sign in to your account</p>
 
         <div class="auth-toggle">
           <button id="loginBtn" class="active">Login</button>
@@ -23,58 +21,55 @@
         </div>
 
         <!-- Login Form -->
-        <form id="loginForm">
+        <form id="loginForm" action="/auth/login" method="post">
           <div class="auth-input">
             <label>Email/Username</label>
-            <input type="text" name="username" required />
+            <input type="text" name="username" required>
           </div>
           <div class="auth-input">
             <label>Password</label>
-            <input type="password" name="password" required />
+            <input type="password" name="password" required>
           </div>
-
-          <div class="auth-options">
-            <label><input type="checkbox" /> Remember Me</label>
-            <a href="#">Forgot Password?</a>
+          <div>
+            <input type="checkbox" id="remember"> <label for="remember">Remember Me</label>
           </div>
-
           <button class="auth-btn">Login</button>
+          <p><a href="#">Forgot Password?</a></p>
         </form>
 
         <!-- Signup Form -->
-        <form id="signupForm" style="display: none;">
+        <form id="signupForm" action="/auth/signup" method="post" style="display: none;">
           <div class="auth-input">
             <label>Full Name</label>
-            <input type="text" required />
+            <input type="text" name="name" required>
           </div>
           <div class="auth-input">
             <label>Email</label>
-            <input type="email" required />
+            <input type="email" name="email" required>
           </div>
           <div class="auth-input">
             <label>Password</label>
-            <input type="password" required />
+            <input type="password" name="password" required>
           </div>
           <div class="auth-input">
             <label>Confirm Password</label>
-            <input type="password" required />
+            <input type="password" name="confirm_password" required>
           </div>
-
           <button class="auth-btn">Signup</button>
         </form>
 
         <div class="auth-divider">or login using</div>
-
         <div class="google-login">
-          <img src="/static/google-logo.png" alt="Google" />
+          <a href="/auth/google">
+            <img src="{{ url_for('static',path='icons/google.svg')}}" alt="Google Login">
+          </a>
         </div>
-
-        <p class="auth-terms">By continuing, you agree to our <a href="#">Terms</a></p>
       </div>
     </div>
 
     <div class="auth-right"></div>
   </div>
+
 
 
   <script>
