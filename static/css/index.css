@@ -193,6 +193,50 @@ input:focus {
   filter: brightness(90%);
 }
 
+.form-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  overflow: hidden;
+  min-height: 420px; /* ensures consistent height */
+}
+
+.auth-form {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+.auth-form.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.auth-form:not(.active) {
+  transform: translateX(-100%);
+}
+
+.form-toggle button.active {
+  background: #ff007f;
+  color: white;
+  transform: scale(1.05);
+  transition: 0.2s ease;
+}
+
+/* Responsive adjustment (keep your existing media queries) */
+@media (max-width: 900px) {
+  .form-wrapper {
+    min-height: 380px;
+  }
+}
+
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .auth-container {

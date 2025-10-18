@@ -25,54 +25,53 @@
         <button id="signupBtn">Signup</button>
       </div>
 
-      <!-- LOGIN FORM -->
-      <form id="loginForm" method="POST" action="/auth/login">
-        <label>Email/Username</label>
-        <input type="text" name="email" placeholder="Enter email or username" required>
-        
-        <label>Password</label>
-        <input type="password" name="password" placeholder="Enter password" required>
+      <div class="form-wrapper">
+        <!-- LOGIN FORM -->
+        <form id="loginForm" method="POST" action="/auth/login" class="auth-form active">
+          <label>Email/Username</label>
+          <input type="text" name="email" placeholder="Enter email or username" required>
+          
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter password" required>
 
-        <div class="remember">
-          <input type="checkbox" id="remember">
-          <label for="remember">Remember Me</label>
-        </div>
+          <div class="remember">
+            <input type="checkbox" id="remember">
+            <label for="remember">Remember Me</label>
+          </div>
 
-        <button type="submit" class="gradient-btn">Login</button>
+          <button type="submit" class="gradient-btn">Login</button>
 
-        <a href="#" class="forgot">Forgot Password</a>
-        <div class="divider"><span>or login using</span></div>
+          <a href="#" class="forgot">Forgot Password</a>
+          <div class="divider"><span>or login using</span></div>
 
-        <a href="/auth/google" class="google-login">
-          <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google"> 
-        </a>
-      </form>
+          <a href="/auth/google" class="google-login">
+            <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google"> 
+          </a>
+        </form>
 
-      <!-- SIGNUP FORM -->
-      <form id="signupForm" method="POST" action="/auth/signup" style="display:none;">
-        <label>Full Name</label>
-        <input type="text" name="fullname" placeholder="Enter full name" required>
+        <!-- SIGNUP FORM -->
+        <form id="signupForm" method="POST" action="/auth/signup" class="auth-form">
+          <label>Full Name</label>
+          <input type="text" name="fullname" placeholder="Enter full name" required>
 
-        <label>Email</label>
-        <input type="email" name="email" placeholder="Enter email" required>
+          <label>Email</label>
+          <input type="email" name="email" placeholder="Enter email" required>
 
-        <label>Password</label>
-        <input type="password" name="password" placeholder="Enter password" required>
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter password" required>
 
-        <label>Confirm Password</label>
-        <input type="password" name="confirm_password" placeholder="Confirm password" required>
+          <label>Confirm Password</label>
+          <input type="password" name="confirm_password" placeholder="Confirm password" required>
 
-        <button type="submit" class="gradient-btn">Signup</button>
-      </form>
+          <button type="submit" class="gradient-btn">Signup</button>
+        </form>
+      </div>
 
       <div class="terms">Terms</div>
     </div>
 
     <!-- Right Side -->
-    <div class="auth-right">
-      <!-- <img src="{{ url_for('static', path='images/bg-art.jpg') }}" alt="Background"> -->
-    </div>
-
+    <div class="auth-right"></div>
   </div>
 
   <script>
@@ -83,23 +82,26 @@
     const title = document.getElementById('formTitle');
     const subtitle = document.getElementById('formSubtitle');
 
-    loginBtn.addEventListener('click', () => {
-      loginForm.style.display = 'block';
-      signupForm.style.display = 'none';
+    function showLogin() {
+      loginForm.classList.add('active');
+      signupForm.classList.remove('active');
       loginBtn.classList.add('active');
       signupBtn.classList.remove('active');
       title.textContent = 'Login';
       subtitle.textContent = 'Sign In to Your Account';
-    });
+    }
 
-    signupBtn.addEventListener('click', () => {
-      signupForm.style.display = 'block';
-      loginForm.style.display = 'none';
+    function showSignup() {
+      signupForm.classList.add('active');
+      loginForm.classList.remove('active');
       signupBtn.classList.add('active');
       loginBtn.classList.remove('active');
       title.textContent = 'Signup';
       subtitle.textContent = 'Create a New Account';
-    });
+    }
+
+    loginBtn.addEventListener('click', showLogin);
+    signupBtn.addEventListener('click', showSignup);
   </script>
 </body>
 </html>
